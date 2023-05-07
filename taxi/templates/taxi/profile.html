@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>User data</h1>
+{% if data %}
+{% for user_field, user_data in data.user.items %}
+    <p>{{ user_field }}: {{ user_data }}</p>
+{% endfor %}
+
+{% if data.driver_phone %}
+<p>driver phone: {{ data.driver_phone }}</p>
+{% endif %}
+
+{% if data.customer_phone %}
+<p>customer phone: {{ data.customer_phone }}</p>
+{% endif %}
+
+<h1>Car data</h1>
+{% for car_field, car_data in data.car.items %}
+    <p>{{ car_field }}: {{ car_data }}</p>
+{% endfor %}
+{% endif %}
+
+<h1>Orders</h1>
+{% if data.driver_phone %}
+<h2><a href="/driver_orders/">Get order</a></h2>
+{% else %}
+<h2><a href="/order/">Create order</a></h2>
+{% endif %}
+{% for order in data.orders %}
+    <p>Order id: {{ order.id }}</p>
+    <p>Date: {{ order.order_date }}</p>
+    <p>Rate: {{ order.rate }}</p>
+    <p>Status: {{ order.status }}</p>
+    <p>Cost: {{ order.cost }}</p>
+    {% if order.status == 'active' %}
+        <form method="post">
+            {% csrf_token %}
+            {{ data.form }}
+            <label for="order_id" hidden="hidden">Order id</label>
+            <input id="order_id" type="text" hidden="hidden" name="order_id" value="{{ order.id }}">
+            <button type="submit">Update</button>
+        </form>
+    {% endif %}
+    <p>--------------------------</p>
+
+{% endfor %}
+</body>
+</html>

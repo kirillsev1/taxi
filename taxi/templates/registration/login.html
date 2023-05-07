@@ -1,0 +1,15 @@
+{% if request.user.is_authenticated %}
+    <p>You are already logged in</p>
+{% else %}
+  {% if form.error %}
+    <p>Your username and password didn't match. Please try again.</p>
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}" >
+  {% csrf_token %}
+  {{ form }}
+  <button type="submit">Register</button>
+  </form>
+
+  <p>Register <a href="/driver_register">as driver</a> <a href="/customer_register">as passenger</a></p>
+{% endif %}

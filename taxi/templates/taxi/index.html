@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Сайт такси</title>
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="#">О нас</a></li>
+            <li><a href="#">Услуги</a></li>
+            <li><a href="#">Контакты</a></li>
+            <li><a href="{% url 'logout' %}?next={{ request.path }}">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="hero">
+    <h1>Сайт такси</h1>
+    <p>Лучшее такси в городе</p>
+    <a href="/order" class="btn">Заказать</a>
+</div>
+
+<section class="services">
+    <h2>Наши услуги</h2>
+    <ul>
+        <li>
+            <img src="images/icon1.png" alt="иконка">
+            <h3>Быстрое перемещение</h3>
+            <p>Мы доставим вас куда угодно в кратчайшие сроки</p>
+        </li>
+        <li>
+            <img src="images/icon2.png" alt="иконка">
+            <h3>Комфортные автомобили</h3>
+            <p>Наши машины оборудованы всем необходимым для вашего комфорта</p>
+        </li>
+        <li>
+            <img src="images/icon3.png" alt="иконка">
+            <h3>Надежность</h3>
+            <p>Мы гарантируем безопасность и надежность нашего такси</p>
+        </li>
+    </ul>
+</section>
+
+<footer>
+    <p>Copyright ©
+        <script type="text/javascript">
+				document.write(new Date().getFullYear());
+        </script>
+        Сайт такси. Все права защищены.
+    </p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,13 @@
+docker run -d --name taxi -p 5999:5432 \
+    -v $HOME/postgresql/taxi/:/var/lib/postgresql/taxi \
+    -e POSTGRES_PASSWORD=12345678 \
+    -e POSTGRES_USER=taxi_user \
+    -e POSTGRES_DB=taxi_db \
+    postgres
+
+docker run -d --name taxi -p 5999:5432 \
+    -v $HOME/postgresql/taxi/:/var/lib/postgresql/taxi \
+    -e POSTGRES_PASSWORD=12345678 \
+    -e POSTGRES_USER=taxi_user \
+    -e POSTGRES_DB=taxi_db \
+    postgis/postgis

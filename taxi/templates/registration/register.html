@@ -1,0 +1,74 @@
+{% if request.user.is_authenticated %}
+    <p>You are already logged in</p>
+{% else %}
+{% comment %}
+<!--    <form action="{% url 'register' %}" method="POST">-->
+<!--        {% csrf_token %}-->
+<!--        {{ form.as_p }}-->
+
+<!--        <label for="username">Username</label><br>-->
+<!--        <input type="text" id="username"><br>-->
+
+<!--        <label for="phone">Again</label><br>-->
+<!--        <input type="text" id="phone"><br>-->
+
+<!--        <label for="password1">Password</label> <br>-->
+<!--        <input type="text" id="password1"><br>-->
+
+<!--        <label for="password2">Again</label><br>-->
+<!--        <input type="text" id="password2"><br>-->
+<!--        <p>Your car</p>-->
+<!--        <label for="mark">Mark</label><br>-->
+<!--        <input type="text" id="mark"><br>-->
+
+<!--        <label for="capacity">Capacity</label><br>-->
+<!--        <input type="text" id="capacity"><br>-->
+
+<!--        <label for="created">Created</label><br>-->
+<!--        <input type="text" id="created"><br>-->
+
+<!--        <label for="number">Number</label><br>-->
+<!--        <input type="text" id="number"><br>-->
+
+<!--        <label for="rate">Rate</label><br>-->
+<!--        <input type="text" id="rate"><br>-->
+
+<!--        <button type="submit"> click</button>-->
+<!--    </form>-->
+{% endcomment %}
+{% block content %}
+    <h1>Register</h1>
+    {% if error %}
+        {{ error }}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" id="location" name="location">
+        {% for tag in form %}
+            {% if tag.label_tag == "Created:" %}
+                <p>Car data</p>
+            {% endif %}
+        <div>{{ tag.label_tag }}{{ tag }}</div>
+        {% endfor %}
+
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}
+{% endif %}
+<a href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        const locationInput = document.getElementById("location");
+        locationInput.value = `${position.coords.latitude},${position.coords.longitude}`;
+    }
+
+    getLocation();
+</script>
