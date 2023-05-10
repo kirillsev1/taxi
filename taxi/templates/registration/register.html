@@ -1,61 +1,88 @@
-{% if request.user.is_authenticated %}
-    <p>You are already logged in</p>
-{% else %}
-{% comment %}
-<!--    <form action="{% url 'register' %}" method="POST">-->
-<!--        {% csrf_token %}-->
-<!--        {{ form.as_p }}-->
+{% extends "base.html" %}
 
-<!--        <label for="username">Username</label><br>-->
-<!--        <input type="text" id="username"><br>-->
-
-<!--        <label for="phone">Again</label><br>-->
-<!--        <input type="text" id="phone"><br>-->
-
-<!--        <label for="password1">Password</label> <br>-->
-<!--        <input type="text" id="password1"><br>-->
-
-<!--        <label for="password2">Again</label><br>-->
-<!--        <input type="text" id="password2"><br>-->
-<!--        <p>Your car</p>-->
-<!--        <label for="mark">Mark</label><br>-->
-<!--        <input type="text" id="mark"><br>-->
-
-<!--        <label for="capacity">Capacity</label><br>-->
-<!--        <input type="text" id="capacity"><br>-->
-
-<!--        <label for="created">Created</label><br>-->
-<!--        <input type="text" id="created"><br>-->
-
-<!--        <label for="number">Number</label><br>-->
-<!--        <input type="text" id="number"><br>-->
-
-<!--        <label for="rate">Rate</label><br>-->
-<!--        <input type="text" id="rate"><br>-->
-
-<!--        <button type="submit"> click</button>-->
-<!--    </form>-->
-{% endcomment %}
-{% block content %}
-    <h1>Register</h1>
-    {% if error %}
-        {{ error }}
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" id="location" name="location">
-        {% for tag in form %}
-            {% if tag.label_tag == "Created:" %}
-                <p>Car data</p>
-            {% endif %}
-        <div>{{ tag.label_tag }}{{ tag }}</div>
-        {% endfor %}
-
-        <button type="submit">Register</button>
-    </form>
+{% block links %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
 {% endblock %}
-{% endif %}
-<a href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
+{% block content %}
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="auth-form">
+          {% if request.user.is_authenticated %}
+            <p>You are already logged in</p>
+          {% else %}
+            <h2>Register</h2>
+            {% if error %}
+              <p class="error-msg">{{ error }}</p>
+            {% endif %}
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" id="location" name="location">
+              <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+              </div>
+              <div class="form-group">
+                {{ form.first_name.label_tag }}
+                {{ form.first_name }}
+              </div>
+              <div class="form-group">
+                {{ form.last_name.label_tag }}
+                {{ form.last_name }}
+              </div>
+              <div class="form-group">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+              </div>
+              <div class="form-group">
+                {{ form.phone.label_tag }}
+                {{ form.phone }}
+              </div>
+              <div class="form-group">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+              </div>
+              <div class="form-group">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+              </div>
+              {% if form.created %}
+                <h1>Car Data</h1>
+              {% endif %}
+              <div class="form-group">
+                {{ form.created.label_tag }}
+                {{ form.created }}
+              </div>
+              <div class="form-group">
+                {{ form.manufacturer.label_tag }}
+                {{ form.manufacturer }}
+              </div>
+              <div class="form-group">
+                {{ form.capacity.label_tag }}
+                {{ form.capacity }}
+              </div>
+              <div class="form-group">
+                {{ form.number.label_tag }}
+                {{ form.number }}
+              </div>
+              <div class="form-group">
+                {{ form.mark.label_tag }}
+                {{ form.mark }}
+              </div>
+              <div class="form-group">
+                {{ form.rate.label_tag }}
+                {{ form.rate }}
+              </div>
+              <button type="submit" class="btn">Register</button>
+            </form>
+          {% endif %}
+          <p>Already have an account? <a href="{% url 'login' %}">Log in</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 <script>
     function getLocation() {
         if (navigator.geolocation) {
@@ -72,3 +99,4 @@
 
     getLocation();
 </script>
+{% endblock %}

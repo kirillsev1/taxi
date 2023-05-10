@@ -8,8 +8,18 @@ from django.conf.global_settings import AUTH_USER_MODEL
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
-car_choices = (('economy', 'economy'), ('comfort', 'comfort'), ('business', 'business'), ('executed', 'executed'))
-order_statuses = (('completed', 'completed'), ('active', 'active'), ('canceled', 'canceled'), ('executed', 'executed'))
+car_choices = (
+    ('1', 'economy'),
+    ('2', 'comfort'),
+    ('3', 'business'),
+)
+order_statuses = (
+    ('completed', 'completed'),
+    ('active', 'active'),
+    ('canceled', 'canceled'),
+    ('executed', 'executed'),
+    ('evaluation', 'evaluation')
+)
 
 
 # Create your models here.
@@ -81,8 +91,7 @@ class Order(UUIDMixin):
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, null=True)
     departure = PointField(srid=4326, blank=True, null=True)
-    order_date = models.DateTimeField(validators=[MinValueValidator(timezone.now())],
-                                      help_text='date and time must be grater than now')
+    order_date = models.DateTimeField(auto_now=True)
     arrival = PointField(srid=4326, blank=True, null=True, )
     cost = models.DecimalField(default=0.0, max_digits=10, decimal_places=2)
     rate = models.CharField(max_length=9, choices=car_choices)

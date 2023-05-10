@@ -19,7 +19,7 @@ driver_data = {
         "capacity": "5",
         "number": "123",
         "mark": "123",
-        "rate": "economy"
+        "rate": "1"
     }
 }
 driver_to_change = {
@@ -145,7 +145,7 @@ def create_viewset_tests(url, cls_model, request_data, data_to_change):
     return CustomTests
 
 
-car_request_content = {'manufacturer': 'test', 'capacity': 4, 'number': '123', 'mark': '123', 'rate': 'economy'}
+car_request_content = {'manufacturer': 'test', 'capacity': 4, 'number': '123', 'mark': '123', 'rate': '1'}
 car_to_change = {'capacity': 5}
 order_data = {
     "created": "2023-04-27T10:58:34.703593Z",
@@ -154,7 +154,7 @@ order_data = {
     "order_date": "2023-10-27 0:58:34.703609Z",
     "arrival": "SRID=4326;POINT (-0.0326156616210938 0.0470352120022418)",
     "cost": "0.00",
-    "rate": "economy",
+    "rate": "1",
     "status": "active"
 }
 order_to_change = {

@@ -1,0 +1,79 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+}
+
+
+.btn {
+  display: inline-block;
+  background-color: #00BFFF;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.2em;
+  margin: 1em auto;
+}
+
+.btn:hover {
+  background-color: #008AC6;
+}
+
+/* Services section */
+.services {
+  margin: 4rem auto;
+  max-width: 1200px;
+}
+
+.services h2 {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.services ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.services li {
+  flex-basis: calc(33.33% - 2rem);
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background-color: #fff;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.services li img {
+  max-width: 100px;
+  margin-bottom: 1rem;
+}
+
+.services li h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.services li p {
+  font-size: 1.2rem;
+}
+
+/* About section */
+.about {
+  max-width: 800px;
+  margin: 4rem auto;
+  text-align: center;
+}
+
+.about h2 {
+  font-size: 3rem;
+}
+
+.about p {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}

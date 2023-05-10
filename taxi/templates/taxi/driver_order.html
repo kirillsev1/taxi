@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block links %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/order.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
+{% endblock %}
+
+{% block scripts %}
+    {% if order.status == 'executed' or order.order.status == "active" %}
+        <script src="{% static 'js/driver_order_1.js' %}"></script>
+    {% else %}
+        <script src="{% static 'js/driver_order_2.js' %}"></script>
+    {% endif %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_fBdY87ORS_Hq8FQaYSpRahwlvGP3NZE&callback=initMap" async defer></script>
+{% endblock %}
+
+{% block content %}
+    {% if order.order.status == "active" %}
+        <form method="POST">
+            {% csrf_token %}
+            <input id="order" name="order" value="{{ order.order.id }}" hidden="hidden">
+            {{ order }}
+            <p>{{ order.order.id }}</p>
+            <p>{{ order.order.order_date }}</p>
+            <p>{{ order.order.departure }}</p>
+            <p>{{ order.order.arrival }}</p>
+            <p>{{ order.order.cost }}</p>
+            <select id="answer" name="answer" class="answer">
+              <option>Взять заказ</option>
+              <option>Отказаться</option>
+            </select>
+            <input type="submit" value="Send">
+        </form>
+    {% elif order.status == "executed" %}
+        <form method="POST">
+            {% csrf_token %}
+            <input id="order_end" name="order_end" value="{{ order.id }}" hidden="hidden">
+            <p>{{ order.id }}</p>
+            <p>{{ order.order_date }}</p>
+            <p>{{ order.departure }}</p>
+            <p>{{ order.arrival }}</p>
+            <p>{{ order.cost }}</p>
+            <input type="submit" value="Конец поездки">
+        </form>
+    {% else %}
+        <form method="POST">
+            <p>No active orders</p>
+        </form>
+    {% endif %}
+    <div id="coordinates"></div>
+    <div id="map"></div>
+{% endblock %}

@@ -1,25 +1,24 @@
-from datetime import datetime
-
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import Point
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from django.contrib.auth import decorators as auth_decorators, mixins as auth_mixins, login, authenticate
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
+from django.contrib.auth import decorators as auth_decorators
 from django.shortcuts import render, redirect
-from rest_framework import decorators, viewsets, parsers, status as status_codes, permissions, status, generics
-from rest_framework.request import Request
+from rest_framework import viewsets, parsers, status as status_codes, permissions
 from rest_framework.response import Response
 from django.db import models, transaction
-
-from taxi_manager.forms import DriverRegistrationForm, CustomerRegistrationForm, LoginForm, OrderFrom, CostForm
+from taxi_manager.forms import DriverRegistrationForm, CustomerRegistrationForm, OrderFrom, EvaluationForm
 from taxi_manager.models import Car, Driver, Customer, Order, CarOrder
 from taxi_manager.serializers import CarSerializer, DriverSerializer, CustomerSerializer, OrderSerializer, \
     CarOrderSerializer, UserSerializer
 
+car_choices = (
+    ('1', 'economy'),
+    ('2', 'comfort'),
+    ('3', 'business'),
+)
 
-# Create your views here.
+
+@transaction.atomic
 @auth_decorators.login_required
 def profile_page(request):
     user = request.user
@@ -32,10 +31,14 @@ def profile_page(request):
     except Exception:
         customer = False
     if request.method == 'POST':
-        form = CostForm(request.POST)
-        if form.is_valid():
+        customer_response = request.POST.get('answer')
+        if customer_response == 'Отозвать заказ':
+            Order.objects.filter(customer__user=request.user, id=request.POST.get('order_id')).delete()
+            return redirect('/profile/')
+        evaluation_form = EvaluationForm(request.POST)
+        if evaluation_form.is_valid():
             try:
-                form.save(request.POST.get('order_id'))
+                evaluation_form.save(request.POST.get('order_id'))
             except IntegrityError:
                 return redirect('/profile/')
             return redirect('/profile/')
@@ -50,10 +53,12 @@ def profile_page(request):
         car = Car.objects.get(id=driver.__dict__['car_id'])
         data['car'] = {i: j for i, j in car.__dict__.items() if i not in ['id', '_state']}
         data['driver_phone'] = driver.__dict__['phone']
+        data['orders'] = list(get_objects(Order, 'driver', Driver.objects.get(user=user)).order_by('order_date'))
     if customer:
-        data['orders'] = get_objects_by_field(Order, 'customer', Customer.objects.get(user=user))
+        data['orders'] = list(get_objects(Order, 'customer', Customer.objects.get(user=user)).order_by('order_date'))
         data['customer_phone'] = customer.__dict__['phone']
-        data['form'] = CostForm()
+        data['rate_form'] = EvaluationForm()
+        data['car_choices'] = car_choices
     return render(request, 'taxi/profile.html', {'data': data})
 
 
@@ -61,31 +66,37 @@ def index(request):
     return render(request, 'taxi/index.html')
 
 
-def get_objects_by_field(model, field_name, field_value):
-    queryset = model.objects.filter(**{field_name: field_value}).order_by('order_date')
-    return list(queryset)
+@transaction.atomic
+def get_objects(model, field_name, field_value):
+    queryset = model.objects.filter(**{field_name: field_value})
+    return queryset
 
 
+@transaction.atomic
 @auth_decorators.login_required
-def drivers_orders_page(request):
+def driver_order_page(request):
     if request.method == 'POST':
         order_id = request.POST.get('order')
-        if order_id:
+        driver_response = request.POST.get('answer')
+        print(driver_response)
+        if order_id and driver_response == 'Взять заказ':
             order = Order.objects.get(id=order_id)
             car_order_qs = CarOrder.objects.filter(Q(order=order))
             car_order_qs.delete()
             order.driver = Driver.objects.get(user=request.user)
             order.status = 'executed'
             order.save()
-            return redirect('/profile/')
+            return redirect('/driver_orders/')
+        if order_id and driver_response == 'Отказаться':
+            current_order = CarOrder.objects.filter(car__driver__user=request.user, order_id=order_id)
+            current_order.delete()
         order_end_id = request.POST.get('order_end')
         if order_end_id:
             order = Order.objects.get(id=order_end_id)
             car_order_qs = CarOrder.objects.filter(Q(order=order))
             car_order_qs.delete()
-            order.status = 'completed'
+            order.status = 'evaluation'
             order.save()
-
             driver = order.driver
             driver.location = order.arrival
             driver.save()
@@ -102,9 +113,10 @@ def drivers_orders_page(request):
         print(order)
     except Exception as ex:
         print(ex)
-    return render(request, 'taxi/driver_orders.html', {'order': order})
+    return render(request, 'taxi/driver_order.html', {'order': order})
 
 
+@transaction.atomic
 @auth_decorators.login_required
 def order_page(request):
     try:
@@ -115,9 +127,12 @@ def order_page(request):
         form = OrderFrom(request.POST)
         if form.is_valid():
             try:
-                form.save(request)
+                order = form.save(request)
             except IntegrityError:
                 return render(request, 'taxi/order_page.html', {'form': form, 'error': 'Something gone wrong'})
+
+            if isinstance(order, str):
+                return render(request, 'taxi/order_page.html', {'form': form, 'error': order})
             return redirect('/profile/')
     else:
         form = OrderFrom()
@@ -144,6 +159,7 @@ def query_from_request(request, cls_serializer=None) -> dict:
     return request.GET
 
 
+@transaction.atomic
 def create_viewset(cls_model: models.Model, serializer):
     class CustomViewSet(viewsets.ModelViewSet):
         serializer_class = serializer
@@ -222,14 +238,14 @@ def driver_register(request):
         form = DriverRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                driver = form.save()
-                location_lat = request.POST.get('location').split(',')[0]
-                location_lon = request.POST.get('location').split(',')[1]
-                if location_lat and location_lon:
-                    driver.location = Point(float(location_lon), float(location_lat))
-                    driver.save()
+                driver = form.save(request.POST.get('location'))
             except IntegrityError:
-                return render(request, 'registration/register.html', {'form': form, 'error': 'User with such username already exists'})
+                return render(request, 'registration/register.html',
+                              {'form': form, 'error': 'User with such username already exists'})
+            if isinstance(driver, str):
+                return render(request, 'registration/register.html',
+                              {'form': form, 'error': driver})
+            driver.save()
             return redirect('/login/')
     else:
         form = DriverRegistrationForm()
@@ -244,9 +260,12 @@ def customer_register(request):
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                form.save()
+                customer = form.save()
             except IntegrityError:
-                return render(request, 'registration/register.html', {'form': form, 'error': 'User with such username already exists'})
+                return render(request, 'registration/register.html',
+                              {'form': form, 'error': 'User with such username already exists'})
+            if isinstance(customer, str):
+                return render(request, 'registration/register.html', {'form': form, 'error': customer})
             return redirect('/login/')
     else:
         form = CustomerRegistrationForm()

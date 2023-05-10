@@ -1,54 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Сайт такси</title>
-</head>
-<body>
-<header>
-    <nav>
-        <ul>
-            <li><a href="#">О нас</a></li>
-            <li><a href="#">Услуги</a></li>
-            <li><a href="#">Контакты</a></li>
-            <li><a href="{% url 'logout' %}?next={{ request.path }}">Logout</a></li>
+{% extends "base.html" %}
+{% block links %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="services" id="services">
+        <h2 class="services_title">Our services</h2>
+        <ul class="services_list">
+            <li class="services_item">
+                <img src="{% static 'images/icon1.png' %}" alt="иконка" class="services_icon">
+                <h3 class="services_item-title">Fast transportation</h3>
+                <p class="services_item-description">We will take you anywhere in the shortest possible time. Our company provides a fast and convenient way to move around the city, allowing you to save time and avoid traffic jams.</p>
+            </li>
+            <li class="services_item">
+                <img src="{% static 'images/icon2.png' %}" alt="иконка" class="services_icon">
+                <h3 class="services_item-title">Comfortable cars</h3>
+                <p class="services_item-description">Our cars are equipped with everything necessary for your comfort. We offer a wide selection of vehicles of various brands, classes, and price categories to meet all your needs.</p>
+            </li>
+            <li class="services_item">
+                <img src="{% static 'images/icon3.png' %}" alt="иконка" class="services_icon">
+                <h3 class="services_item-title">Durability</h3>
+                <p class="services_item-description">We guarantee the safety and reliability of our taxi service. All our drivers go through a thorough selection process and have extensive work experience. We also monitor the technical condition of our fleet to ensure the safety and comfort of our customers.</p>
+            </li>
+            <li class="services_item">
+                <img src="{% static 'images/icon4.png' %}" alt="иконка" class="services_icon">
+                <h3 class="services_item-title">Start now</h3>
+                <p class="services_item-description">Just use this button to create new order. Set points on the map. And enjoy your trip.</p>
+                <div style="text-align: center;">
+                    <a href="/order" class="btn btn-primary">Create order</a>
+                </div>
+            </li>
         </ul>
-    </nav>
-</header>
-<div class="hero">
-    <h1>Сайт такси</h1>
-    <p>Лучшее такси в городе</p>
-    <a href="/order" class="btn">Заказать</a>
-</div>
-
-<section class="services">
-    <h2>Наши услуги</h2>
-    <ul>
-        <li>
-            <img src="images/icon1.png" alt="иконка">
-            <h3>Быстрое перемещение</h3>
-            <p>Мы доставим вас куда угодно в кратчайшие сроки</p>
-        </li>
-        <li>
-            <img src="images/icon2.png" alt="иконка">
-            <h3>Комфортные автомобили</h3>
-            <p>Наши машины оборудованы всем необходимым для вашего комфорта</p>
-        </li>
-        <li>
-            <img src="images/icon3.png" alt="иконка">
-            <h3>Надежность</h3>
-            <p>Мы гарантируем безопасность и надежность нашего такси</p>
-        </li>
-    </ul>
-</section>
-
-<footer>
-    <p>Copyright ©
-        <script type="text/javascript">
-				document.write(new Date().getFullYear());
-        </script>
-        Сайт такси. Все права защищены.
-    </p>
-</footer>
-</body>
-</html>
+    </section>
+    <section class="about" id="about">
+        <h2 class="about_title">About us</h2>
+        <p class="about_description">We are a leading taxi company in the city, providing fast, reliable and safe transportation services to our customers. Our company has been in business for over 10 years and during this time, we have established ourselves as a trusted and reputable provider of taxi services.</p>
+        <p class="about_description">We pride ourselves on our commitment to customer satisfaction and our ability to provide a high-quality service at an affordable price. Our drivers are professional, courteous and knowledgeable, ensuring that you arrive at your destination safely and on time.</p>
+        <p class="about_description">Whether you need a ride to the airport, a business meeting, or just a night out on the town, we are here to provide you with the best transportation service possible. Thank you for choosing our company!</p>
+    </section>
+{% endblock %}

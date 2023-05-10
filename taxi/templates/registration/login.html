@@ -1,15 +1,37 @@
-{% if request.user.is_authenticated %}
-    <p>You are already logged in</p>
-{% else %}
-  {% if form.error %}
-    <p>Your username and password didn't match. Please try again.</p>
-  {% endif %}
+{% extends "base.html" %}
 
-  <form method="post" action="{% url 'login' %}" >
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Register</button>
-  </form>
+{% block links %}
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+{% endblock %}
 
-  <p>Register <a href="/driver_register">as driver</a> <a href="/customer_register">as passenger</a></p>
-{% endif %}
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="auth-form">
+          {% if form.error %}
+            <p class="error-msg">Your username and password didn't match. Please try again.</p>
+          {% endif %}
+
+          <h2>Login</h2>
+
+          <form method="post" action="{% url 'login' %}" >
+            {% csrf_token %}
+            <div class="form-group">
+              {{ form.username.label_tag }}
+              {{ form.username }}
+            </div>
+            <div class="form-group">
+              {{ form.password.label_tag }}
+              {{ form.password }}
+            </div>
+            <button type="submit" class="btn">Log in</button>
+          </form>
+
+          <p>Don't have an account? <a href="/customer_register">Sign up as a passenger</a> or <a href="/driver_register">sign up as a driver</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

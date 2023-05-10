@@ -1,0 +1,206 @@
+.container {
+max-width: 1200px;
+margin: 0 auto;
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+align-items: flex-start;
+}
+
+.orders,
+.car-data,
+.user-data {
+  margin-left: 20%;
+  margin-top: 20px;
+}
+
+.user-data {
+width: 50%;
+margin-bottom: 50px;
+padding: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+border-radius: 5px;
+}
+
+.user-data h1 {
+font-size: 24px;
+margin-bottom: 20px;
+}
+
+.user-data p {
+font-size: 18px;
+margin: 10px 0;
+}
+
+.car-data {
+width: 50%;
+margin-bottom: 50px;
+padding: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+border-radius: 5px;
+}
+
+.car-data h1 {
+font-size: 24px;
+margin-bottom: 20px;
+}
+
+.car-data p {
+font-size: 18px;
+margin: 10px 0;
+}
+
+/* Стили для блока с заказами */
+.orders {
+width: 50%;
+margin-bottom: 50px;
+padding: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+border-radius: 5px;
+}
+
+.orders h1 {
+font-size: 24px;
+margin-bottom: 20px;
+}
+
+.orders h2 {
+font-size: 18px;
+margin-bottom: 10px;
+}
+
+.orders p {
+font-size: 18px;
+margin: 10px 0;
+}
+/* Стили для блока с заказом */
+.order {
+  width: 90%;
+  margin-bottom: 50px;
+  padding: 20px;
+  background-color: #FFFFFF;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.order h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.order p {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.order ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.order ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.order ul li span {
+  color: #666666;
+}
+
+.order ul li:last-child {
+  margin-bottom: 0;
+}
+
+.order .btn {
+  margin-top: 30px;
+}
+
+/* Стили для ссылок */
+a {
+color: #00BFFF;
+text-decoration: none;
+}
+
+a:hover {
+text-decoration: underline;
+}
+
+
+
+/* Стили для кнопок */
+.btn {
+  display: inline-block;
+  background-color: #00BFFF;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  border: none;
+  font-size: 18px;
+}
+
+.btn:hover {
+  background-color: #0080FF;
+}
+
+/* Стили для формы */
+
+.order form {
+  margin-top: 20px;
+}
+
+.order form label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.order form {
+  margin-top: 20px;
+}
+
+.order form label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.order form input[type="text"],
+.order form input[type="password"],
+.order form input[type="number"],
+.order form input[type="email"],
+.order form textarea {
+  width: 90%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.order form btn {
+  display: inline-block;
+  background-color: #00BFFF;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  border: none;
+  font-size: 18px;
+}
+
+.order form .btn:hover {
+  background-color: #0080FF;
+}
