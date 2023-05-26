@@ -81,7 +81,6 @@ class CustomerRegistrationForm(Form):
     password1 = CharField(max_length=100)
     password2 = CharField(max_length=100)
 
-    @transaction.atomic
     def save(self):
         if self.cleaned_data.get('password1') != self.cleaned_data.get('password2'):
             return 'passwords are different'
@@ -95,7 +94,6 @@ class CustomerRegistrationForm(Form):
             email=self.cleaned_data.get('email')
         )
         customer = Customer.objects.create(user=user, phone=self.cleaned_data.get('phone'))
-        print(customer)
         customer.save()
 
 
@@ -109,7 +107,6 @@ def get_point(points):
     return Point(float(x), float(y), srid=4326)
 
 
-@transaction.atomic
 def get_objects_by_field(model, field_name, field_value):
     queryset = model.objects.filter(**{field_name: field_value})
     return list(queryset)
