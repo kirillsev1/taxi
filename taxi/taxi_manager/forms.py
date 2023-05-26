@@ -120,7 +120,6 @@ class OrderFrom(Form):
     arrival = CharField(widget=TextInput(attrs={'id': 'arrival-input'}))
     rate = ChoiceField(widget=RadioSelect(), choices=car_choices)
 
-    @transaction.atomic
     def save(self, request):
         order = Order.objects.create(
             customer=Customer.objects.get(user=request.user),
@@ -131,7 +130,6 @@ class OrderFrom(Form):
             status='active'
         )
         order.save()
-
         current_rate_index = int(self.cleaned_data.get('rate')) - 1
 
         higher_rates = [car_choices[i][0] for i in range(current_rate_index, len(car_choices))]

@@ -15,8 +15,8 @@ router.register(r'Order', views.OrderViewSet, basename='order-list-create')
 urlpatterns = [
     path('', views.index, name='homepage'),
     path('profile/', views.profile_page, name='profile'),
-    path('order/', views.order_page, name='order_page'),
-    path('driver_orders/', views.driver_order_page, name='driver_orders'),
+    path('customer_order/', views.order_page, name='order_page'),
+    path('driver_order/', views.driver_order_page, name='driver_orders'),
     path('rest/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),

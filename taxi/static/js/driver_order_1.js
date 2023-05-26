@@ -1,11 +1,7 @@
 function initMap() {
-    {% if order.order %}
-        const arrPointString = "{{ order.order.arrival }}";
-        const depPointString = "{{ order.order.departure }}";
-    {% else %}
-        const arrPointString = "{{ order.arrival }}";
-        const depPointString = "{{ order.departure }}";
-    {% endif %}
+    const arrPointString = "{{ order.order.arrival }}";
+    const depPointString = "{{ order.order.departure }}";
+
     const depPointArray = depPointString.match(/POINT \(([0-9.-]+) ([0-9.-]+)\)/);
     const depLat = parseFloat(depPointArray[2]);
     const depLng = parseFloat(depPointArray[1]);

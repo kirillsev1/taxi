@@ -8,9 +8,11 @@
   <div class="profile-block user-data">
     <h1>User data</h1>
     {% if data %}
-      {% for user_field, user_data in data.user.items %}
-        <p>{{ user_field }}: {{ user_data }}</p>
-      {% endfor %}
+      <p>Id: {{ data.user.id }}</p>
+      <p>Username: {{ data.user.username }}</p>
+      <p>First name: {{ data.user.first_name }}</p>
+      <p>Last name: {{ data.user.last_name }}</p>
+      <p>e-mail: {{ data.user.email }}</p>
       {% if data.driver_phone %}
         <p>driver phone: {{ data.driver_phone }}</p>
       {% endif %}
@@ -23,31 +25,33 @@
   {% if data.driver_phone %}
     <div class="profile-block car-data">
     <h1>Car data</h1>
-    {% for car_field, car_data in data.car.items %}
-      <p>{{ car_field }}: {{ car_data }}</p>
-    {% endfor %}
+      {{ car }}
+      <p>Created: {{ data.car.created }}</p>
+      <p>Manufacturer: {{ data.car.manufacturer }}</p>
+      <p>Capacity: {{ data.car.capacity }}</p>
+      <p>Number: {{ data.car.number }}</p>
+      {% if data.car.rate == '1' %}
+        <p>Rate: economy</p>
+      {% elif data.car.rate == '2' %}
+        <p>Rate: comfort</p>
+      {% elif data.car.rate == '3' %}
+        <p>Rate: business</p>
+      {% endif %}
     </div>
   {% endif %}
 
   <div class="profile-block orders">
     <h1>Orders</h1>
     {% if data.driver_phone %}
-      <h2><a href="/driver_orders/">Get order</a></h2>
+      <h2><a href="/driver_order/">Get order</a></h2>
     {% else %}
-      <h2><a href="/order/">Create order</a></h2>
+      <h2><a href="/customer_order/">Create order</a></h2>
     {% endif %}
 
   {% for order in data.orders %}
     <div class="order">
       <p class="order-id">Order id: {{ order.id }}</p>
       <p class="order-date">Date: {{ order.order_date }}</p>
-
-      {% for car in data.car_choices %}
-        {% if order.rate in car %}
-          <p class="order-rate">Rate: {{ car.1 }}</p>
-        {% endif %}
-      {% endfor %}
-
         <p class="order-status">Status: {{ order.status }}</p>
         <p class="order-cost">Cost: {{ order.cost }}</p>
         <p class="order-rating">Rating: {{ order.rating }}</p>

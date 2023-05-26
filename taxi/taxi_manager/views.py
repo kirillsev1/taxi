@@ -3,9 +3,9 @@ from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.contrib.auth import decorators as auth_decorators
 from django.shortcuts import render, redirect
-from rest_framework import viewsets, parsers, status as status_codes, permissions
-from rest_framework.response import Response
-from django.db import models, transaction
+from rest_framework import viewsets, permissions
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 from taxi_manager.forms import DriverRegistrationForm, CustomerRegistrationForm, OrderFrom, EvaluationForm
 from taxi_manager.models import Car, Driver, Customer, Order, CarOrder
 from taxi_manager.serializers import CarSerializer, DriverSerializer, CustomerSerializer, OrderSerializer, \
@@ -18,18 +18,11 @@ car_choices = (
 )
 
 
-@transaction.atomic
 @auth_decorators.login_required
 def profile_page(request):
     user = request.user
-    try:
-        driver = Driver.objects.get(user=user)
-    except Exception:
-        driver = False
-    try:
-        customer = Customer.objects.get(user=user)
-    except Exception:
-        customer = False
+    driver = Driver.objects.filter(user=user)
+    customer = Customer.objects.filter(user=user)
     if request.method == 'POST':
         customer_response = request.POST.get('answer')
         if customer_response == 'Отозвать заказ':
@@ -45,18 +38,17 @@ def profile_page(request):
 
     query_user = User.objects.get_by_natural_key(username=user)
     data = {
-        'user': {i: j for i, j in query_user.__dict__.items() if
-                 i in ['id', 'username', 'first_name', 'last_name', 'email']},
+        'user': query_user,
     }
 
     if driver:
-        car = Car.objects.get(id=driver.__dict__['car_id'])
-        data['car'] = {i: j for i, j in car.__dict__.items() if i not in ['id', '_state']}
-        data['driver_phone'] = driver.__dict__['phone']
-        data['orders'] = list(get_objects(Order, 'driver', Driver.objects.get(user=user)).order_by('order_date'))
+        car = driver[0].car
+        data['car'] = car
+        data['driver_phone'] = driver[0].phone
+        data['orders'] = list(get_objects(Order, 'driver', driver[0]).order_by('order_date'))
     if customer:
-        data['orders'] = list(get_objects(Order, 'customer', Customer.objects.get(user=user)).order_by('order_date'))
-        data['customer_phone'] = customer.__dict__['phone']
+        data['orders'] = list(get_objects(Order, 'customer', customer[0]).order_by('order_date'))
+        data['customer_phone'] = customer[0].phone
         data['rate_form'] = EvaluationForm()
         data['car_choices'] = car_choices
     return render(request, 'taxi/profile.html', {'data': data})
@@ -66,63 +58,69 @@ def index(request):
     return render(request, 'taxi/index.html')
 
 
-@transaction.atomic
 def get_objects(model, field_name, field_value):
     queryset = model.objects.filter(**{field_name: field_value})
     return queryset
 
 
-@transaction.atomic
+def save_order(request, order_id):
+    order = Order.objects.get(id=order_id)
+    car_order_qs = CarOrder.objects.filter(Q(order=order))
+    car_order_qs.delete()
+    order.driver = Driver.objects.get(user=request.user)
+    order.status = 'executed'
+    order.save()
+
+
+def save_ended_order(order_end_id):
+    order = Order.objects.get(id=order_end_id)
+    car_order_qs = CarOrder.objects.filter(Q(order=order))
+    car_order_qs.delete()
+    order.status = 'evaluation'
+    order.save()
+    driver = order.driver
+    driver.location = order.arrival
+    driver.save()
+
+
+def get_order(request):
+    car_id = Driver.objects.get(user=request.user).__dict__.get('car_id')
+    car = Car.objects.get(id=car_id)
+    order = CarOrder.objects.filter(car=car)
+    driver_order = Order.objects.filter(driver__user=request.user, status='executed')
+    if driver_order:
+        order = {'order': driver_order}
+    return order
+
+
 @auth_decorators.login_required
 def driver_order_page(request):
+    try:
+        Driver.objects.get(user=request.user)
+    except ObjectDoesNotExist:
+        return redirect('/customer_order/')
     if request.method == 'POST':
-        order_id = request.POST.get('order')
+        order_id = request.GET.get('order_id')
+        order_end_id = request.GET.get('order_end')
         driver_response = request.POST.get('answer')
-        print(driver_response)
-        if order_id and driver_response == 'Взять заказ':
-            order = Order.objects.get(id=order_id)
-            car_order_qs = CarOrder.objects.filter(Q(order=order))
-            car_order_qs.delete()
-            order.driver = Driver.objects.get(user=request.user)
-            order.status = 'executed'
-            order.save()
-            return redirect('/driver_orders/')
-        if order_id and driver_response == 'Отказаться':
+        if order_id and driver_response == 'Accept order':
+            save_order(request, order_id)
+            return redirect('/driver_order/')
+        if order_id and driver_response == 'Cancel':
             current_order = CarOrder.objects.filter(car__driver__user=request.user, order_id=order_id)
             current_order.delete()
-        order_end_id = request.POST.get('order_end')
         if order_end_id:
-            order = Order.objects.get(id=order_end_id)
-            car_order_qs = CarOrder.objects.filter(Q(order=order))
-            car_order_qs.delete()
-            order.status = 'evaluation'
-            order.save()
-            driver = order.driver
-            driver.location = order.arrival
-            driver.save()
+            save_ended_order(order_end_id)
             return redirect('/profile/')
-    try:
-        car_id = Driver.objects.get(user=request.user).__dict__.get('car_id')
-        car = Car.objects.get(id=car_id)
-        order = CarOrder.objects.get(car=car)
-    except Exception:
-        order = 'No ordders'
-
-    try:
-        order = Order.objects.get(driver__user__username=request.user, status='executed')
-        print(order)
-    except Exception as ex:
-        print(ex)
-    return render(request, 'taxi/driver_order.html', {'order': order})
+    return render(request, 'taxi/driver_order.html', {'order': get_order(request)})
 
 
-@transaction.atomic
 @auth_decorators.login_required
 def order_page(request):
     try:
         Customer.objects.get(user=request.user)
-    except Exception:
-        return redirect('/driver_orders/')
+    except ObjectDoesNotExist:
+        return redirect('/driver_order/')
     if request.method == 'POST':
         form = OrderFrom(request.POST)
         if form.is_valid():
@@ -130,7 +128,6 @@ def order_page(request):
                 order = form.save(request)
             except IntegrityError:
                 return render(request, 'taxi/order_page.html', {'form': form, 'error': 'Something gone wrong'})
-
             if isinstance(order, str):
                 return render(request, 'taxi/order_page.html', {'form': form, 'error': order})
             return redirect('/profile/')
@@ -141,7 +138,7 @@ def order_page(request):
 
 class Permission(permissions.BasePermission):
     def has_permission(self, request, _):
-        if request.method in ['GET', 'HEAD', 'PATCH']:
+        if request.method in ['GET', 'HEAD', 'OPTIONS', 'PATCH']:
             return bool(request.user and request.user.is_authenticated)
         elif request.method in ['POST', 'PUT', 'DELETE']:
             return bool(request.user and request.user.is_superuser)
@@ -159,74 +156,16 @@ def query_from_request(request, cls_serializer=None) -> dict:
     return request.GET
 
 
-@transaction.atomic
-def create_viewset(cls_model: models.Model, serializer):
-    class CustomViewSet(viewsets.ModelViewSet):
-        serializer_class = serializer
-        queryset = cls_model.objects.all()
-        permission_classes = [Permission]
-
-        # def get_object(self):
-        #     queryset = self.filter_queryset(self.get_queryset())
-        #     try:
-        #         obj = queryset.get(pk=self.request.GET.get('id'))
-        #     except:
-        #         obj = None
-        #     self.check_object_permissions(self.request, obj)
-        #     return obj
-
-        def get_queryset(self):
-            instances = cls_model.objects.all()
-            query = query_from_request(self.request, serializer)
-            if query:
-                instances = instances.filter(**query)
-            return instances
-
-        def delete(self, request):
-            query = query_from_request(request, serializer)
-            if query:
-                instances = cls_model.objects.filter(**query)
-                objects_num = len(instances)
-                if not objects_num:
-                    msg = f'DELETE query {query} did not match any instances of {cls_model.__name__}'
-                    return Response(msg, status=status_codes.HTTP_404_NOT_FOUND)
-                try:
-                    instances.delete()
-                except Exception as error:
-                    return Response(error, status=status_codes.HTTP_500_INTERNAL_SERVER_ERROR)
-                msg = f'DELETED {objects_num} instances of {cls_model.__name__}'
-                status = status_codes.HTTP_204_NO_CONTENT if objects_num == 1 else status_codes.HTTP_200_OK
-                return Response(msg, status=status)
-            return Response('DELETE has got no query', status=status_codes.HTTP_400_BAD_REQUEST)
-
-        def put(self, request):
-            def serialize(target):
-                payload = parsers.JSONParser().parse(request)
-                if target:
-                    serialized = serializer(target, data=payload, partial=True)
-                    status = status_codes.HTTP_200_OK
-                    body = f'PUT has updated instance of {cls_model.__name__} id={target.id}'
-                else:
-                    serialized = serializer(data=payload, partial=True)
-                    status = status_codes.HTTP_201_CREATED
-                    body = f'PUT has created a new instance of {cls_model.__name__}'
-
-                if not serialized.is_valid():
-                    return status_codes.HTTP_400_BAD_REQUEST, f'PUT could not process content: {payload}'
-
-                try:
-                    serialized.save()
-                except Exception as error:
-                    return status_codes.HTTP_500_INTERNAL_SERVER_ERROR, error
-                return status, body
-
-            query = query_from_request(request, serializer)
-            target_id = query.get('id', '')
-            if target_id:
-                target_object = cls_model.objects.get(id=target_id)
-                status, body = serialize(target_object)
-                return Response(body, status=status)
-            return Response('PUT has got no id primary key', status=status_codes.HTTP_400_BAD_REQUEST)
+def create_viewset(cls_model: models.Model, serializer, permission, order_field):
+    class_name = f"{cls_model.__name__}ViewSet"
+    doc = f"API endpoint that allows users to be viewed or edited for {cls_model.__name__}"
+    CustomViewSet = type(class_name, (viewsets.ModelViewSet,), {
+        "__doc__": doc,
+        "serializer_class": serializer,
+        "queryset": cls_model.objects.all().order_by(order_field),
+        "permission classes": [permission],
+        "get_queryset": lambda self, *args, **kwargs: cls_model.objects.filter(**
+            query_from_request(self.request, serializer)).order_by(order_field)})
 
     return CustomViewSet
 
@@ -273,9 +212,9 @@ def customer_register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 
-UserViewSet = create_viewset(User, UserSerializer)
-CarViewSet = create_viewset(Car, CarSerializer)
-DriverViewSet = create_viewset(Driver, DriverSerializer)
-PassengerViewSet = create_viewset(Customer, CustomerSerializer)
-OrderViewSet = create_viewset(Order, OrderSerializer)
-CarOrderViewSet = create_viewset(CarOrder, CarOrderSerializer)
+UserViewSet = create_viewset(User, UserSerializer, Permission, 'id')
+CarViewSet = create_viewset(Car, CarSerializer, Permission, 'id')
+DriverViewSet = create_viewset(Driver, DriverSerializer, Permission, 'id')
+PassengerViewSet = create_viewset(Customer, CustomerSerializer, Permission, 'id')
+OrderViewSet = create_viewset(Order, OrderSerializer, Permission, 'id')
+CarOrderViewSet = create_viewset(CarOrder, CarOrderSerializer, Permission, 'id')

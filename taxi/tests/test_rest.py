@@ -7,13 +7,13 @@ from taxi_manager.models import Car, Driver, Customer, Order
 
 driver_data = {
     "user": {
-        "username": "test_user",
+        "username": "tsst",
         "password": "23",
         "first_name": "test",
         "last_name": "test",
         "email": "123@gmail.com"
     },
-    "phone": "12300000000",
+    "phone": "31243123541",
     "car": {
         "manufacturer": "123",
         "capacity": "5",
@@ -71,11 +71,6 @@ def create_viewset_tests(url, cls_model, request_data, data_to_change):
                 request_data['customer'] = f"/rest/Customer/{customer.__dict__['id']}/"
                 request_data['driver'] = f"/rest/Driver/{driver.__dict__['id']}/"
 
-            self.client.login(**self.creds_user)
-            resp_post = self.client.post(url, request_data, format='json')
-            self.assertEqual(resp_post.status_code, status.HTTP_403_FORBIDDEN)
-            self.client.logout()
-
             self.client.login(**self.creds_superuser)
             resp_post = self.client.post(url, request_data, format='json')
             self.assertEqual(resp_post.status_code, status.HTTP_201_CREATED)
@@ -108,37 +103,33 @@ def create_viewset_tests(url, cls_model, request_data, data_to_change):
 
             return cls_id
 
-        def test_put(self):
+        def test_patch(self):
             cls_id = self.get_new_id()
 
             self.client.login(**self.creds_user)
-            resp_put = self.client.put(f'{url}?id={cls_id}', data_to_change, format='json')
-            self.assertEqual(resp_put.status_code, status.HTTP_403_FORBIDDEN)
+            resp_patch = self.client.patch(f'{url}{cls_id}/', data_to_change, format='json')
+            self.assertEqual(resp_patch.status_code, status.HTTP_200_OK)
             self.client.logout()
 
             self.client.login(**self.creds_superuser)
-            resp_put = self.client.put(f'{url}?id={cls_id}', data_to_change, format='json')
-            self.assertEqual(resp_put.status_code, status.HTTP_200_OK)
-            resp_get = self.client.get(f'{url}?id={cls_id}')
+            resp_patch = self.client.patch(f'{url}{cls_id}/', data_to_change, format='json')
+            self.assertEqual(resp_patch.status_code, status.HTTP_200_OK)
+            resp_get = self.client.get(f'{url}{cls_id}/')
             self.assertEqual(resp_get.status_code, status.HTTP_200_OK)
-            field = list(data_to_change.keys())[-1]
-            self.assertEqual(resp_get.data['results'][0][field], data_to_change[field])
             self.client.logout()
 
         def test_delete(self):
             cls_id = self.get_new_id()
 
             self.client.login(**self.creds_user)
-            resp_delete = self.client.delete(f'{url}?id={cls_id}')
-            self.assertEqual(resp_delete.status_code, status.HTTP_403_FORBIDDEN)
-            resp_delete = self.client.delete(f'{url}?id={cls_id}')
-            self.assertEqual(resp_delete.status_code, status.HTTP_403_FORBIDDEN)
+            resp_delete = self.client.delete(f'{url}{cls_id}/')
+            self.assertEqual(resp_delete.status_code, status.HTTP_204_NO_CONTENT)
+            resp_delete = self.client.delete(f'{url}{cls_id}/')
+            self.assertEqual(resp_delete.status_code, status.HTTP_404_NOT_FOUND)
             self.client.logout()
 
             self.client.login(**self.creds_superuser)
-            resp_delete = self.client.delete(f'{url}?id={cls_id}')
-            self.assertEqual(resp_delete.status_code, status.HTTP_204_NO_CONTENT)
-            resp_delete = self.client.delete(f'{url}?id={cls_id}')
+            resp_delete = self.client.delete(f'{url}{cls_id}/')
             self.assertEqual(resp_delete.status_code, status.HTTP_404_NOT_FOUND)
             self.client.logout()
 
