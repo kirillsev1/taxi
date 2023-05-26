@@ -25,7 +25,7 @@ def profile_page(request):
     customer = Customer.objects.filter(user=user)
     if request.method == 'POST':
         customer_response = request.POST.get('answer')
-        if customer_response == 'Отозвать заказ':
+        if customer_response == 'Cancel order':
             Order.objects.filter(customer__user=request.user, id=request.POST.get('order_id')).delete()
             return redirect('/profile/')
         evaluation_form = EvaluationForm(request.POST)
