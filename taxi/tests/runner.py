@@ -10,7 +10,7 @@ def prepare_db(self):
 
 class PostgresSchemaRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
-        for conn_name in connections:
+        for _, conn_name in enumerate(connections):
             conn = connections[conn_name]
             conn.ops.postgis = True
             conn.prepare_database = MethodType(prepare_db, conn)

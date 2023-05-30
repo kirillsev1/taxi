@@ -1,22 +1,5 @@
 from django.contrib import admin
-
-from .models import Driver, Customer, Car, Order, CarOrder
-
-
-# Register your models here.
-@admin.register(Driver)
-class DriverAdmin(admin.ModelAdmin):
-    ...
-
-
-@admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
-    ...
-
-
-@admin.register(Car)
-class CarAdmin(admin.ModelAdmin):
-    ...
+from taxi_manager.models import Driver, Customer, Car, Order, CarOrder
 
 
 class CarInline(admin.TabularInline):
@@ -31,3 +14,6 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CarOrder)
+admin.site.register(Driver)
+admin.site.register(Customer)
+admin.site.register(Car)

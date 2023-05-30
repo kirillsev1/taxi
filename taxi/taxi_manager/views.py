@@ -164,8 +164,8 @@ def create_viewset(cls_model: models.Model, serializer, permission, order_field)
         "serializer_class": serializer,
         "queryset": cls_model.objects.all().order_by(order_field),
         "permission classes": [permission],
-        "get_queryset": lambda self, *args, **kwargs: cls_model.objects.filter(**
-            query_from_request(self.request, serializer)).order_by(order_field)})
+        "get_queryset": lambda self, *args, **kwargs: cls_model.objects.filter(
+            **query_from_request(self.request, serializer)).order_by(order_field)})
 
     return CustomViewSet
 

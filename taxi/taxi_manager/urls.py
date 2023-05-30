@@ -1,17 +1,15 @@
-from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, include
-from django.views.generic import RedirectView
 from rest_framework import routers
-
-from . import views
+from taxi_manager import views
 
 router = routers.DefaultRouter()
-router.register(r'User', views.UserViewSet, basename="User")
-router.register(r'Car', views.CarViewSet)
-router.register(r'Driver', views.DriverViewSet)
-router.register(r'Customer', views.PassengerViewSet)
-router.register(r'Order', views.OrderViewSet, basename='order-list-create')
+router.register('user', views.UserViewSet)
+router.register('car', views.CarViewSet)
+router.register('driver', views.DriverViewSet)
+router.register('customer', views.PassengerViewSet)
+router.register('order', views.OrderViewSet)
+
 urlpatterns = [
     path('', views.index, name='homepage'),
     path('profile/', views.profile_page, name='profile'),
