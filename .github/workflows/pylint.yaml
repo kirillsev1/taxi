@@ -42,13 +42,13 @@ jobs:
         pip install -r taxi/requirements.txt
     - name: Тесты django models
       run: |
-        ./manage.py test tests.test_models
+        ./taxi/manage.py test tests.test_models
     - name: Тесты django views
       run: |
-        ./manage tests.test_views
+        ./taxi/manage tests.test_views
     - name: Тесты django rest api
       run: |
-        ./manage.py test tests.test_rest
+        ./taxi/manage.py test tests.test_rest
     - name: Тесты django forms
       run: |
-        ./manage.py test tests.test_forms
+        ./taxi/manage.py test tests.test_forms
