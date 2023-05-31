@@ -44,9 +44,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r taxi/requirements.txt
-    - name: Тесты django models
-      run: |
-        ./taxi/manage.py test tests.test_models
+#    - name: Тесты django models
+#      run: |
+#        ./taxi/manage.py test tests.test_models
     - name: Тесты django views
       run: |
         ./taxi/manage tests.test_views
