@@ -160,5 +160,7 @@ class EvaluationForm(Form):
     def save(self, order_id):
         order = Order.objects.filter(id=order_id)
         order_rate = self.cleaned_data.get('rating')
-        if order_rate > 0 and order[0].status == 'evaluation':
+        if 0 <= order_rate <= 5 and order[0].status == 'evaluation':
             order.update(rating=order_rate, status='completed')
+        else:
+            return 'only numbers form 0 to 5'

@@ -28,14 +28,14 @@ def handle_driver_data(driver, user_data):
     user_data.update({
         'car': driver_instance.car,
         'driver_phone': driver_instance.phone,
-        'orders': list(get_objects(Order, 'driver', driver_instance).order_by('order_date')),
+        'orders': list(get_objects(Order, 'driver', driver_instance).order_by('-order_date')),
     })
 
 
 def handle_customer_data(customer, user_data):
     customer_instance = customer[0]
     user_data.update({
-        'orders': list(get_objects(Order, 'customer', customer_instance).order_by('order_date')),
+        'orders': list(get_objects(Order, 'customer', customer_instance).order_by('-order_date')),
         'customer_phone': customer_instance.phone,
         'rate_form': EvaluationForm(),
         'car_choices': car_choices,
