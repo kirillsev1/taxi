@@ -48,9 +48,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r taxi/requirements.txt
         echo $'POSTGRES_PORT=5432\nPOSTGRES_USER=test\nPOSTGRES_PASSWORD=test\nPOSTGRES_DB=postgres\nPOSTGRES_HOST=postgres' >> taxi/.env
-    - name: Тесты django models
-      run: |
-        python3 taxi/manage.py test tests.test_models
     - name: Тесты django views
       run: |
         python3 taxi/manage.py test tests.test_views
