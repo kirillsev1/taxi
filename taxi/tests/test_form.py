@@ -59,4 +59,4 @@ class TestForms(TestCase):
     def test_driver_registration_form_wrong_phone(self):
         form = DriverRegistrationForm(data=self.driver_data)
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.save('1.1,1.1'), 'wrong phone')
+        self.assertEqual(form.save('1.1,1.1'), 'wrong number')

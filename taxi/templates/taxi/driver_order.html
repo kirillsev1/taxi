@@ -7,11 +7,11 @@
 {% endblock %}
 
 {% block scripts %}
-    {% if order.order.status == 'executed' or order.order.status == "active" %}
+    {% if order.status == 'executed' or order.status == "active" %}
         <script>
             function initMap() {
-                const arrPointString = "{{ order.order.arrival }}";
-                const depPointString = "{{ order.order.departure }}";
+                const arrPointString = "{{ order.arrival }}";
+                const depPointString = "{{ order.departure }}";
 
                 const depPointArray = depPointString.match(/POINT \(([0-9.-]+) ([0-9.-]+)\)/);
                 const depLat = parseFloat(depPointArray[2]);
@@ -72,32 +72,27 @@
 {% endblock %}
 
 {% block content %}
-{{ order.order.departure }}
-    {% if order.order.status == "active" %}
-        <form action="{{ request.path }}?order_id={{ order.order.id }}" method="POST">
-            {% csrf_token %}
-            {{ order }}
-            <p>{{ order.order.id }}</p>
-            <p>{{ order.order.order_date }}</p>
-            <p>{{ order.order.departure }}</p>
-            <p>{{ order.order.arrival }}</p>
-            <p>{{ order.order.cost }}</p>
+{{ order.departure }}
+    {% if order.status == "active" or order.status == "executed" %}
+    <form action="{{ request.path }}?order_id={{ order.id }}" method="POST">
+        {% csrf_token %}
+        {{ order }}
+        <p>{{ order.id }}</p>
+        <p>{{ order.order_date }}</p>
+        <p>{{ order.departure }}</p>
+        <p>{{ order.arrival }}</p>
+        <p>{{ order.cost }}</p>
+        {% if order.status == "active" %}
             <select id="answer" name="answer" class="answer">
-              <option>Accept order</option>
-              <option>Cancel</option>
+                <option>Accept order</option>
+                <option>Cancel</option>
             </select>
             <input type="submit" value="Send">
-        </form>
-    {% elif order.order.status == "executed" %}
-        <form action="{{ request.path }}?order_end={{ order.order.id }}" method="POST">
-            {% csrf_token %}
-            <p>{{ order.order.id }}</p>
-            <p>{{ order.order.order_date }}</p>
-            <p>{{ order.order.departure }}</p>
-            <p>{{ order.order.arrival }}</p>
-            <p>{{ order.order.cost }}</p>
+        {% elif order.status == "executed" %}
+            <input hidden="hidden" name="answer" class="answer" value="End of trip">
             <input type="submit" value="End of trip">
-        </form>
+        {% endif %}
+    </form>
     {% else %}
         <form method="POST">
             <p>No active orders</p>

@@ -56,7 +56,8 @@ class Driver(UUIDMixin):
             raise ValidationError('phone must start with + and number of digits nust be 10')
 
     def __str__(self):
-        return f'First name: {self.user.first_name} - Last name: {self.user.last_name}'
+        user = self.user
+        return f'First name: {user.first_name} - Last name: {user.last_name}'
 
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -75,7 +76,8 @@ class Customer(UUIDMixin):
             raise ValidationError('phone must start with + and number of digits nust be 10')
 
     def __str__(self):
-        return f'First name: {self.user.first_name} - Last name: {self.user.last_name}'
+        user = self.user
+        return f'First name: {user.first_name} - Last name: {user.last_name}'
 
     def delete(self, *args, **kwargs):
         self.user.delete()

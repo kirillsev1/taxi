@@ -6,44 +6,6 @@ from rest_framework.authtoken.models import Token
 from taxi_manager.models import Car, Driver, Customer, Order
 
 
-driver_data = {
-    'user': {
-        'username': 'tsst',
-        'password': '23',
-        'first_name': 'test',
-        'last_name': 'test',
-        'email': '123@gmail.com',
-    },
-    'phone': '31243123541',
-    'car': {
-        'manufacturer': '163',
-        'capacity': '5',
-        'number': '223',
-        'mark': '423',
-        'rate': '1',
-    },
-}
-
-driver_to_change = {
-    'phone': '5550000000',
-}
-
-customer_data = {
-    'user': {
-        'username': 'test_user',
-        'password': '23',
-        'first_name': 'tsst',
-        'last_name': 'trst',
-        'email': '13@gmail.com',
-    },
-    'phone': '1200000000',
-}
-
-customer_to_change = {
-    'phone': '5550000000',
-}
-
-
 def create_driver(cls_model, user_data, number_of_seats):
     user = User.objects.create_user(**user_data)
     car = Car.objects.create(manufacturer='23', capacity=number_of_seats)
@@ -79,8 +41,19 @@ def create_car(cls_model, request_data):
     return str(cls_model.objects.get(**request_data).id)
 
 
+def create_order_data(password):
+    driver_user = User.objects.create_user(username='test', password=password)
+    car = Car.objects.create(manufacturer='123', capacity=4)
+    driver = Driver.objects.create(user=driver_user, phone='2123', car=car)
+
+    customer_user = User.objects.create_user(username='test1', password=password)
+    customer = Customer.objects.create(user=customer_user, phone='2313')
+
+    return driver, customer
+
+
 def create_view_set_tests(url, cls_model, request_data, data_to_change):
-    class CustomTests(TestCase):
+    class CustomTestCase(TestCase):
         def setUp(self):
             self.client = APIClient()
             self.creds_user = {'username': 'username', 'password': 'password'}
@@ -98,13 +71,7 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
 
         def test_post(self):
             if cls_model.__name__ == 'Order':
-                password = self.creds_user.get('password')
-                driver_user = User.objects.create_user(username='test', password=password)
-                car = Car.objects.create(manufacturer='123', capacity=4)
-                driver = Driver.objects.create(user=driver_user, phone='2123', car=car)
-
-                customer_user = User.objects.create_user(username='test1', password=password)
-                customer = Customer.objects.create(user=customer_user, phone='2313')
+                driver, customer = create_order_data(self.creds_user.get('password'))
                 request_data['customer'] = f'/rest/customer/{customer.id}/'
                 request_data['driver'] = f'/rest/driver/{driver.id}/'
 
@@ -131,7 +98,12 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
             cls_id = self.get_new_id()
 
             self.client.login(**self.creds_superuser)
-            resp_patch = self.client.patch(f'{url}{cls_id}/', data_to_change, format='json')
+            resp_patch = self.client.patch(
+                f'{url}{cls_id}/',
+                data_to_change,
+                format='json',
+            )
+
             self.assertEqual(resp_patch.status_code, status.HTTP_200_OK)
             resp_get = self.client.get(f'{url}{cls_id}/')
             self.assertEqual(resp_get.status_code, status.HTTP_200_OK)
@@ -141,7 +113,11 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
             cls_id = self.get_new_id()
 
             self.client.login(**self.creds_user)
-            resp_patch = self.client.patch(f'{url}{cls_id}/', data_to_change, format='json')
+            resp_patch = self.client.patch(
+                f'{url}{cls_id}/',
+                data_to_change,
+                format='json',
+            )
             self.assertEqual(resp_patch.status_code, status.HTTP_200_OK)
             self.client.logout()
 
@@ -150,17 +126,17 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
 
             self.client.login(**self.creds_user)
             resp_delete = self.client.delete(f'{url}{cls_id}/')
+            self.assertEqual(resp_delete.status_code, status.HTTP_403_FORBIDDEN)
+            self.client.logout()
+
+            self.client.login(**self.creds_superuser)
+            resp_delete = self.client.delete(f'{url}{cls_id}/')
             self.assertEqual(resp_delete.status_code, status.HTTP_204_NO_CONTENT)
             resp_delete = self.client.delete(f'{url}{cls_id}/')
             self.assertEqual(resp_delete.status_code, status.HTTP_404_NOT_FOUND)
             self.client.logout()
 
-            self.client.login(**self.creds_superuser)
-            resp_delete = self.client.delete(f'{url}{cls_id}/')
-            self.assertEqual(resp_delete.status_code, status.HTTP_404_NOT_FOUND)
-            self.client.logout()
-
-    return CustomTests
+    return CustomTestCase
 
 
 car_request_content = {'manufacturer': 'test', 'capacity': 4, 'number': '125', 'mark': '153', 'rate': '1'}
@@ -179,7 +155,41 @@ order_to_change = {
     'rating': '4.0',
 }
 
-DriverViewSetTests = create_view_set_tests('/rest/driver/', Driver, driver_data, driver_to_change)
-CustomerViewSetTests = create_view_set_tests('/rest/customer/', Customer, customer_data, customer_to_change)
+driver_data = {
+    'user': {
+        'username': 'tsst',
+        'password': '23',
+        'first_name': 'test',
+        'last_name': 'test',
+        'email': '123@gmail.com',
+    },
+    'phone': '31243123541',
+    'car': {
+        'manufacturer': '163',
+        'capacity': '5',
+        'number': '223',
+        'mark': '423',
+        'rate': '1',
+    },
+}
+
+phone_to_change = {
+    'phone': '5550000000',
+}
+
+customer_data = {
+    'user': {
+        'username': 'test_user',
+        'password': '23',
+        'first_name': 'tsst',
+        'last_name': 'trst',
+        'email': '13@gmail.com',
+    },
+    'phone': '1200000000',
+}
+
+
+DriverViewSetTests = create_view_set_tests('/rest/driver/', Driver, driver_data, phone_to_change)
+CustomerViewSetTests = create_view_set_tests('/rest/customer/', Customer, customer_data, phone_to_change)
 CarViewSetTests = create_view_set_tests('/rest/car/', Car, car_request_content, car_to_change)
 OrderViewSetTests = create_view_set_tests('/rest/order/', Order, order_data, order_to_change)

@@ -2,19 +2,22 @@ from django.contrib.auth.models import User
 from taxi_manager.models import Driver, Customer, Car, Order, CarOrder
 from rest_framework.serializers import HyperlinkedModelSerializer
 
+ID_STR = 'id'
+USER_STR = 'user'
+
 
 class UserSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = User
-        lookup_field = 'id'
-        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'email')
+        lookup_field = ID_STR
+        fields = (ID_STR, 'username', 'password', 'first_name', 'last_name', 'email')
 
 
 class CarSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Car
-        lookup_field = 'id'
-        fields = ('id', 'created', 'manufacturer', 'rate', 'capacity', 'number', 'mark')
+        lookup_field = ID_STR
+        fields = (ID_STR, 'created', 'manufacturer', 'rate', 'capacity', 'number', 'mark')
 
 
 class DriverSerializer(HyperlinkedModelSerializer):
@@ -22,15 +25,15 @@ class DriverSerializer(HyperlinkedModelSerializer):
     car = CarSerializer()
 
     def create(self, validated_data):
-        user_data = validated_data.pop('user')
+        user_data = validated_data.pop(USER_STR)
         user = User.objects.create_user(**user_data)
         car = Car.objects.create(**validated_data.pop('car'))
         return Driver.objects.create(user=user, car=car, **validated_data)
 
     class Meta:
         model = Driver
-        lookup_field = 'id'
-        fields = ('id', 'user', 'phone', 'car')
+        lookup_field = ID_STR
+        fields = (ID_STR, USER_STR, 'phone', 'car')
 
 
 class CustomerSerializer(HyperlinkedModelSerializer):
@@ -38,11 +41,11 @@ class CustomerSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Customer
-        lookup_field = 'id'
-        fields = ('id', 'user', 'phone')
+        lookup_field = ID_STR
+        fields = (ID_STR, USER_STR, 'phone')
 
     def create(self, validated_data):
-        user_data = validated_data.pop('user')
+        user_data = validated_data.pop(USER_STR)
         user = User.objects.create_user(**user_data)
         return Customer.objects.create(user=user, **validated_data)
 
@@ -50,10 +53,10 @@ class CustomerSerializer(HyperlinkedModelSerializer):
 class OrderSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Order
-        lookup_field = 'id'
+        lookup_field = ID_STR
         geo_field = 'arrival'
         fields = (
-            'id',
+            ID_STR,
             'created',
             'customer',
             'driver',
@@ -70,5 +73,5 @@ class OrderSerializer(HyperlinkedModelSerializer):
 class CarOrderSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = CarOrder
-        lookup_field = 'id'
-        fields = ('id', 'car', 'order')
+        lookup_field = ID_STR
+        fields = (ID_STR, 'car', 'order')
