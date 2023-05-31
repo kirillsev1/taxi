@@ -38,8 +38,8 @@ jobs:
         apt-get update \
               && apt-cache showpkg postgresql-$PG_MAJOR-postgis-3 \
               && apt-get install -y --no-install-recommends \
-                   postgresql-$PG_MAJOR-postgis-3=3.2.1+dfsg-1.pgdg110+1 \
-                   postgresql-$PG_MAJOR-postgis-3-scripts
+                   postgresql-postgis-3=3.2.1+dfsg-1.pgdg110+1 \
+                   postgresql-postgis-3-scripts
     - uses: actions/checkout@v2
     - name: Установка Python
       uses: actions/setup-python@v2
