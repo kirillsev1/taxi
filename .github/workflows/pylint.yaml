@@ -39,20 +39,16 @@ jobs:
     - name: Установка зависимостей
       run: |
         python -m pip install --upgrade pip
-        pip install -r library/tests/requirements.txt
+        pip install -r taxi/requirements.txt
     - name: Тесты django models
       run: |
-        chmod +x library/tests/test.sh 
-        ./library/tests/test.sh tests.test_models
+        ./manage.py test tests.test_models
     - name: Тесты django views
       run: |
-        chmod +x library/tests/test.sh 
-        ./library/tests/test.sh tests.test_views
+        ./manage tests.test_views
     - name: Тесты django rest api
       run: |
-        chmod +x library/tests/test.sh 
-        ./library/tests/test.sh tests.test_rest
+        ./manage.py test tests.test_rest
     - name: Тесты django forms
       run: |
-        chmod +x library/tests/test.sh 
-        ./library/tests/test.sh tests.test_forms
+        ./manage.py test tests.test_forms
