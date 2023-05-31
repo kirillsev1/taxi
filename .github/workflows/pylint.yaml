@@ -49,7 +49,7 @@ jobs:
 #        ./taxi/manage.py test tests.test_models
     - name: Тесты django views
       run: |
-        ./taxi/manage tests.test_views
+        ./taxi/manage.py tests.test_views
     - name: Тесты django rest api
       run: |
         ./taxi/manage.py test tests.test_rest
