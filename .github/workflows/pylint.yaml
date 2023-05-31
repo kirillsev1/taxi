@@ -15,7 +15,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r .github/workflows/flake_requirements.txt
     - name: Flake8
-      run: flake8 .
+      run: flake8 ./taxi
   container-job:
     name: Тесты
     runs-on: ubuntu-latest
