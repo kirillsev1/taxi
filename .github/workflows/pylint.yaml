@@ -33,13 +33,12 @@ jobs:
     steps:
     - name: Создание .env файла
       run: |
-        cd ./taxi
-        touch .env
-        echo POSTGRES_PASSWORD=test > .env
-        echo POSTGRES_USER=test > .env
-        echo POSTGRES_DB=postgres > /.env
-        echo POSTGRES_PORT=5432 > /.env
-        echo POSTGRES_HOST=127.0.0.1 > /.env
+        touch /taxi/.env
+        echo POSTGRES_PASSWORD=test > /taxi/.env
+        echo POSTGRES_USER=test > /taxi/.env
+        echo POSTGRES_DB=postgres > /taxi/.env
+        echo POSTGRES_PORT=5432 > /taxi/.env
+        echo POSTGRES_HOST=127.0.0.1 > /taxi/.env
     - name: Установка GDAL
       run: |
         sudo apt-get update
