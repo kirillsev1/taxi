@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.contrib.auth import decorators as auth_decorators
 from django.shortcuts import render, redirect
@@ -16,6 +15,8 @@ car_choices = (
     ('2', 'comfort'),
     ('3', 'business'),
 )
+USER_METHODS = ['GET', 'HEAD', 'OPTIONS', 'PATCH']
+ADMIN_METHODS = ['POST', 'PUT', 'DELETE']
 
 
 @auth_decorators.login_required
@@ -37,21 +38,21 @@ def profile_page(request):
             return redirect('/profile/')
 
     query_user = User.objects.get_by_natural_key(username=user)
-    data = {
+    user_data = {
         'user': query_user,
     }
 
     if driver:
         car = driver[0].car
-        data['car'] = car
-        data['driver_phone'] = driver[0].phone
-        data['orders'] = list(get_objects(Order, 'driver', driver[0]).order_by('order_date'))
+        user_data['car'] = car
+        user_data['driver_phone'] = driver[0].phone
+        user_data['orders'] = list(get_objects(Order, 'driver', driver[0]).order_by('order_date'))
     if customer:
-        data['orders'] = list(get_objects(Order, 'customer', customer[0]).order_by('order_date'))
-        data['customer_phone'] = customer[0].phone
-        data['rate_form'] = EvaluationForm()
-        data['car_choices'] = car_choices
-    return render(request, 'taxi/profile.html', {'data': data})
+        user_data['orders'] = list(get_objects(Order, 'customer', customer[0]).order_by('order_date'))
+        user_data['customer_phone'] = customer[0].phone
+        user_data['rate_form'] = EvaluationForm()
+        user_data['car_choices'] = car_choices
+    return render(request, 'taxi/profile.html', {'data': user_data})
 
 
 def index(request):
@@ -65,7 +66,7 @@ def get_objects(model, field_name, field_value):
 
 def save_order(request, order_id):
     order = Order.objects.get(id=order_id)
-    car_order_qs = CarOrder.objects.filter(Q(order=order))
+    car_order_qs = CarOrder.objects.filter(models.Q(order=order))
     car_order_qs.delete()
     order.driver = Driver.objects.get(user=request.user)
     order.status = 'executed'
@@ -74,7 +75,7 @@ def save_order(request, order_id):
 
 def save_ended_order(order_end_id):
     order = Order.objects.get(id=order_end_id)
-    car_order_qs = CarOrder.objects.filter(Q(order=order))
+    car_order_qs = CarOrder.objects.filter(models.Q(order=order))
     car_order_qs.delete()
     order.status = 'evaluation'
     order.save()
@@ -84,13 +85,15 @@ def save_ended_order(order_end_id):
 
 
 def get_order(request):
-    car_id = Driver.objects.get(user=request.user).__dict__.get('car_id')
+    car_id = Driver.objects.get(user=request.user).car_id
     car = Car.objects.get(id=car_id)
     order = CarOrder.objects.filter(car=car)
+    print(len(order))
+    if order:
+        return order[0]
     driver_order = Order.objects.filter(driver__user=request.user, status='executed')
     if driver_order:
-        order = {'order': driver_order}
-    return order
+        return {'order': driver_order[0]}
 
 
 @auth_decorators.login_required
@@ -133,14 +136,14 @@ def order_page(request):
             return redirect('/profile/')
     else:
         form = OrderFrom()
-    return render(request, "taxi/order_page.html", {'form': form})
+    return render(request, 'taxi/order_page.html', {'form': form})
 
 
 class Permission(permissions.BasePermission):
     def has_permission(self, request, _):
-        if request.method in ['GET', 'HEAD', 'OPTIONS', 'PATCH']:
+        if request.method in USER_METHODS:
             return bool(request.user and request.user.is_authenticated)
-        elif request.method in ['POST', 'PUT', 'DELETE']:
+        elif request.method in ADMIN_METHODS:
             return bool(request.user and request.user.is_superuser)
         return False
 
@@ -157,15 +160,18 @@ def query_from_request(request, cls_serializer=None) -> dict:
 
 
 def create_viewset(cls_model: models.Model, serializer, permission, order_field):
-    class_name = f"{cls_model.__name__}ViewSet"
-    doc = f"API endpoint that allows users to be viewed or edited for {cls_model.__name__}"
+    class_name = f'{cls_model.__name__}ViewSet'
+    doc = f'API endpoint that allows users to be viewed or edited for {cls_model.__name__}'
     CustomViewSet = type(class_name, (viewsets.ModelViewSet,), {
-        "__doc__": doc,
-        "serializer_class": serializer,
-        "queryset": cls_model.objects.all().order_by(order_field),
-        "permission classes": [permission],
-        "get_queryset": lambda self, *args, **kwargs: cls_model.objects.filter(
-            **query_from_request(self.request, serializer)).order_by(order_field)})
+        '__doc__': doc,
+        'serializer_class': serializer,
+        'queryset': cls_model.objects.all().order_by(order_field),
+        'permission classes': [permission],
+        'get_queryset': lambda self, *args, **kwargs: cls_model.objects.filter(
+            **query_from_request(self.request, serializer),
+        ).order_by(order_field),
+    },
+    )
 
     return CustomViewSet
 
@@ -179,11 +185,17 @@ def driver_register(request):
             try:
                 driver = form.save(request.POST.get('location'))
             except IntegrityError:
-                return render(request, 'registration/register.html',
-                              {'form': form, 'error': 'User with such username already exists'})
+                return render(
+                    request,
+                    'registration/register.html',
+                    {'form': form, 'error': 'User with such username already exists'},
+                )
             if isinstance(driver, str):
-                return render(request, 'registration/register.html',
-                              {'form': form, 'error': driver})
+                return render(
+                    request,
+                    'registration/register.html',
+                    {'form': form, 'error': driver},
+                )
             driver.save()
             return redirect('/login/')
     else:
@@ -201,8 +213,11 @@ def customer_register(request):
             try:
                 customer = form.save()
             except IntegrityError:
-                return render(request, 'registration/register.html',
-                              {'form': form, 'error': 'User with such username already exists'})
+                return render(
+                    request,
+                    'registration/register.html',
+                    {'form': form, 'error': 'User with such username already exists'},
+                )
             if isinstance(customer, str):
                 return render(request, 'registration/register.html', {'form': form, 'error': customer})
             return redirect('/login/')

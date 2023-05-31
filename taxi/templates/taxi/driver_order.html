@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block scripts %}
-    {% if order.status == 'executed' or order.order.status == "active" %}
+    {% if order.order.status == 'executed' or order.order.status == "active" %}
         <script>
             function initMap() {
                 const arrPointString = "{{ order.order.arrival }}";
@@ -43,6 +43,9 @@
                     position: { lat: arrLat, lng: arrLng },
                     map,
                     title: "Arrival",
+                    icon: {
+                        url: 'http://maps.google.com/mapfiles/ms/icons/pink-dot.png'
+                    }
                 });
 
                 const flightPlanCoordinates = [
@@ -69,6 +72,7 @@
 {% endblock %}
 
 {% block content %}
+{{ order.order.departure }}
     {% if order.order.status == "active" %}
         <form action="{{ request.path }}?order_id={{ order.order.id }}" method="POST">
             {% csrf_token %}

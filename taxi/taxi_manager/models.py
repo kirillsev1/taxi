@@ -1,11 +1,7 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models import PointField
-from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from uuid import uuid4
-from django.conf.global_settings import AUTH_USER_MODEL
-from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 car_choices = (
@@ -18,11 +14,15 @@ order_statuses = (
     ('active', 'active'),
     ('canceled', 'canceled'),
     ('executed', 'executed'),
-    ('evaluation', 'evaluation')
+    ('evaluation', 'evaluation'),
 )
+NUMBER_LEN = 11
+MAX_STR_LEN = 30
+SRID = 4326
+RUBLE = 84
+STARTING_COST = 75
 
 
-# Create your models here.
 class UUIDMixin(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, unique=True, editable=False)
 
@@ -32,10 +32,10 @@ class UUIDMixin(models.Model):
 
 class Car(UUIDMixin):
     created = models.DateTimeField(auto_now=True)
-    manufacturer = models.CharField(max_length=40)
+    manufacturer = models.CharField(max_length=MAX_STR_LEN)
     capacity = models.IntegerField()
     number = models.CharField(max_length=10)
-    mark = models.CharField(max_length=40)
+    mark = models.CharField(max_length=MAX_STR_LEN)
     rate = models.CharField(max_length=8, choices=car_choices)
 
     def __str__(self):
@@ -48,11 +48,11 @@ class Car(UUIDMixin):
 class Driver(UUIDMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=17, null=False, blank=False, default="+0000000000000")
-    location = PointField(srid=4326, blank=True, null=True)
+    phone = models.CharField(max_length=MAX_STR_LEN, null=False, blank=False, default='+0000000000000')
+    location = PointField(srid=SRID, blank=True, null=True)
 
     def clean(self):
-        if not self.phone.startswith('+') or len(self.phone) != 11:
+        if not self.phone.startswith('+') or len(self.phone) != NUMBER_LEN:
             raise ValidationError('phone must start with + and number of digits nust be 10')
 
     def __str__(self):
@@ -68,10 +68,10 @@ class Driver(UUIDMixin):
 
 class Customer(UUIDMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=17, null=False, blank=False, default="+0000000000000")
+    phone = models.CharField(max_length=MAX_STR_LEN, null=False, blank=False, default='+0000000000000')
 
     def clean(self):
-        if not self.phone.startswith('+') or len(self.phone) != 11:
+        if not self.phone.startswith('+') or len(self.phone) != NUMBER_LEN:
             raise ValidationError('phone must start with + and number of digits nust be 10')
 
     def __str__(self):
@@ -90,17 +90,17 @@ class Order(UUIDMixin):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, null=True)
-    departure = PointField(srid=4326, blank=True, null=True)
+    departure = PointField(srid=SRID, blank=True, null=True)
     order_date = models.DateTimeField(auto_now=True)
-    arrival = PointField(srid=4326, blank=True, null=True, )
-    cost = models.DecimalField(default=0.0, max_digits=10, decimal_places=2)
+    arrival = PointField(srid=SRID, blank=True, null=True)
+    cost = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     rate = models.CharField(max_length=9, choices=car_choices)
     status = models.CharField(max_length=10, choices=order_statuses)
 
     def save(self, *args, **kwargs):
         if self.departure and self.arrival:
             distance = self.departure.distance(self.arrival)
-            self.cost = distance * 75 * 84
+            self.cost = distance * STARTING_COST * RUBLE
         super().save(*args, **kwargs)
 
     def __str__(self):
