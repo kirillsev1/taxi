@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres-postgis
+        image: postgres
         env:
             POSTGRES_PASSWORD: test
             POSTGRES_DBNAME: postgres
