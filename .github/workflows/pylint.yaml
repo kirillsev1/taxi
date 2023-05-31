@@ -31,6 +31,10 @@ jobs:
         ports:
           - 5432:5432
     steps:
+    - name: Установка GDAL
+      run: |
+        sudo apt-get update
+        sudo apt-get install gdal-bin libgdal-dev
     - uses: actions/checkout@v2
     - name: Установка Python
       uses: actions/setup-python@v2
