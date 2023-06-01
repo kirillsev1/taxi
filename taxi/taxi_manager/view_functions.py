@@ -3,8 +3,7 @@ from django.shortcuts import redirect
 from rest_framework import viewsets
 
 from taxi_manager.models import Car, CarOrder, Driver, Order
-
-PROFILE_URL = '/profile/'
+from taxi.config import PROFILE_URL
 
 
 def create_viewset(cls_model: models.Model, serializer, permission, order_field='id'):

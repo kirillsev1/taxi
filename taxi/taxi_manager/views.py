@@ -11,24 +11,8 @@ from taxi_manager.serializers import CarOrderSerializer, CarSerializer, Customer
     OrderSerializer, UserSerializer
 from taxi_manager.view_functions import create_viewset, get_order, handle_customer_response
 from taxi_manager.view_handlers import handle_customer_data, handle_driver_data, handle_driver_resp, handle_eval_form
-
-car_choices = (
-    ('1', 'economy'),
-    ('2', 'comfort'),
-    ('3', 'business'),
-)
-
-REG_TEMPLATE = 'registration/register.html'
-ERROR = 'error'
-FORM = 'form'
-POST = 'POST'
-PROFILE_URL = '/profile/'
-LOGIN_URL = '/login/'
-ORDER_PAGE_TEMPLATE = 'taxi/order_page.html'
-DRIVER_ORDER_URL = '/driver_order/'
-DRIVER_ORDER_TEMPLATE = 'taxi/driver_order.html'
-CUSTOMER_ORDER_URL = '/customer_order/'
-INDEX_TEMPLATE = 'taxi/index.html'
+from taxi.config import POST, INDEX_TEMPLATE, DRIVER_ORDER_TEMPLATE, DRIVER_ORDER_URL, PROFILE_TEMPLATE, \
+    PROFILE_URL, LOGIN_URL, CUSTOMER_ORDER_URL, ORDER_PAGE_TEMPLATE, REG_TEMPLATE, ERROR, FORM, USER_ERROR
 
 
 class Permission(permissions.BasePermission):
@@ -58,7 +42,7 @@ def profile_page(request):
     if customer:
         handle_customer_data(customer, user_data)
 
-    return render(request, 'taxi/profile.html', {'data': user_data})
+    return render(request, PROFILE_TEMPLATE, {'data': user_data})
 
 
 def index(request):
@@ -113,7 +97,7 @@ def driver_register(request):
                 return render(
                     request,
                     REG_TEMPLATE,
-                    {FORM: form, ERROR: 'User with such username already exists'},
+                    {FORM: form, ERROR: USER_ERROR},
                 )
             if isinstance(driver, str):
                 return render(
@@ -141,7 +125,7 @@ def customer_register(request):
                 return render(
                     request,
                     REG_TEMPLATE,
-                    {FORM: form, ERROR: 'User with such username already exists'},
+                    {FORM: form, ERROR: USER_ERROR},
                 )
             if isinstance(customer, str):
                 return render(request, REG_TEMPLATE, {FORM: form, ERROR: customer})

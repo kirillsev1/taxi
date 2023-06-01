@@ -5,23 +5,7 @@ from django.contrib.gis.db.models import PointField
 from django.core.exceptions import ValidationError
 from django.db import models
 
-car_choices = (
-    ('1', 'economy'),
-    ('2', 'comfort'),
-    ('3', 'business'),
-)
-order_statuses = (
-    ('completed', 'completed'),
-    ('active', 'active'),
-    ('canceled', 'canceled'),
-    ('executed', 'executed'),
-    ('evaluation', 'evaluation'),
-)
-NUMBER_LEN = 11
-MAX_STR_LEN = 30
-SRID = 4326
-RUBLE = 84
-STARTING_COST = 75
+from taxi.config import car_choices, order_statuses, NUMBER_LEN, MAX_STR_LEN, SRID, RUBLE, STARTING_COST
 
 
 class UUIDMixin(models.Model):

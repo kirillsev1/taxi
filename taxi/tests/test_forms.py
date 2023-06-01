@@ -5,6 +5,7 @@ from django.test import TestCase
 
 from taxi_manager.forms import CustomerRegistrationForm, DriverRegistrationForm, OrderFrom
 from taxi_manager.models import Customer
+from taxi.config import NUMBER_ERROR, NO_DRIVERS_ERROR
 
 
 class TestForms(TestCase):
@@ -13,7 +14,7 @@ class TestForms(TestCase):
         'first_name': 'Test1',
         'last_name': 'User1',
         'email': 'test@test.com',
-        'phone': '+71234567890',
+        'phone': '+712345678900',
         'password1': 'test_password',
         'password2': 'test_password',
         'created': '2021-01-01',
@@ -54,9 +55,9 @@ class TestForms(TestCase):
         Customer.objects.create(user=user, phone='+700000000')
         request = MagicMock()
         request.user = user
-        self.assertEqual(form.save(request), 'No free drivers behind you')
+        self.assertEqual(form.save(request), NO_DRIVERS_ERROR)
 
     def test_driver_registration_form_wrong_phone(self):
         form = DriverRegistrationForm(data=self.driver_data)
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.save('1.1,1.1'), 'wrong number')
+        self.assertEqual(form.save('1.1,1.1'), NUMBER_ERROR)

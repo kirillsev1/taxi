@@ -5,6 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 from taxi_manager.models import Car, Customer, Driver, Order
+from taxi.config import CAR_REST_URL, CUSTOMER_REST_URL, DRIVER_REST_URL, ORDER_REST_URL
 
 
 def create_driver(cls_model, user_data, number_of_seats):
@@ -190,7 +191,7 @@ customer_data = {
 }
 
 
-DriverViewSetTests = create_view_set_tests('/rest/driver/', Driver, driver_data, phone_to_change)
-CustomerViewSetTests = create_view_set_tests('/rest/customer/', Customer, customer_data, phone_to_change)
-CarViewSetTests = create_view_set_tests('/rest/car/', Car, car_request_content, car_to_change)
-OrderViewSetTests = create_view_set_tests('/rest/order/', Order, order_data, order_to_change)
+DriverViewSetTests = create_view_set_tests(DRIVER_REST_URL, Driver, driver_data, phone_to_change)
+CustomerViewSetTests = create_view_set_tests(CUSTOMER_REST_URL, Customer, customer_data, phone_to_change)
+CarViewSetTests = create_view_set_tests(CAR_REST_URL, Car, car_request_content, car_to_change)
+OrderViewSetTests = create_view_set_tests(ORDER_REST_URL, Order, order_data, order_to_change)

@@ -4,6 +4,7 @@ from django.test.client import Client
 from rest_framework import status
 
 from taxi_manager.models import Car, Customer, Driver
+from taxi.config import PROFILE_URL, CUSTOMER_ORDER_URL, DRIVER_ORDER_URL
 
 car = {
     'manufacturer': '123',
@@ -28,7 +29,7 @@ class SetUpMixin(TestCase):
 
 
 class DriverPageTest(SetUpMixin):
-    url = '/driver_order/'
+    url = DRIVER_ORDER_URL
 
     def test_driver_view(self):
         self.client.login(**self.driver_data)
@@ -46,7 +47,7 @@ class DriverPageTest(SetUpMixin):
 
 
 class CustomerPageTest(SetUpMixin):
-    url = '/customer_order/'
+    url = CUSTOMER_ORDER_URL
 
     def test_driver_view(self):
         self.client.login(**self.driver_data)
@@ -79,7 +80,7 @@ class IndexPageTest(SetUpMixin):
 
 
 class ProfilePageTest(SetUpMixin):
-    url = '/profile/'
+    url = PROFILE_URL
 
     def test_driver_view(self):
         self.client.login(**self.driver_data)

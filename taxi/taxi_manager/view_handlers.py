@@ -4,14 +4,7 @@ from django.shortcuts import redirect
 from taxi_manager.forms import EvaluationForm
 from taxi_manager.models import CarOrder, Order
 from taxi_manager.view_functions import get_objects, save_ended_order, save_order
-
-DRIVER_ORDER_URL = '/driver_order/'
-PROFILE_URL = '/profile/'
-car_choices = (
-    ('1', 'economy'),
-    ('2', 'comfort'),
-    ('3', 'business'),
-)
+from taxi.config import DRIVER_ORDER_URL, PROFILE_URL, car_choices
 
 
 def handle_eval_form(request):

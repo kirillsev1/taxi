@@ -6,14 +6,7 @@ from django.forms.widgets import RadioSelect, TextInput
 
 from taxi_manager.form_functions import check, find_available_drivers, get_point, get_rates, is_order_active
 from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
-
-car_choices = (
-    ('1', 'economy'),
-    ('2', 'comfort'),
-    ('3', 'business'),
-)
-
-MAX_STR_LEN = 30
+from taxi.config import MAX_STR_LEN, car_choices
 
 
 class DriverRegistrationForm(Form):

@@ -5,30 +5,23 @@ from django.contrib.gis.geos import GEOSGeometry, Point
 from django.contrib.gis.measure import D
 
 from taxi_manager.models import Driver, Order
-
-SRID = 4326
-NUMBER_LEN = 11
-CARS_CREATION_YEAR = (1885, 1, 29)
-car_choices = (
-    ('1', 'economy'),
-    ('2', 'comfort'),
-    ('3', 'business'),
-)
+from taxi.config import SRID, NUMBER_LEN, CARS_CREATION_YEAR, car_choices, PASSWORDS_ERROR, NUMBER_ERROR
+from taxi.config import GEO_ERROR, CAR_CREATION_ERROR, TIME_ERROR, NO_DRIVERS_ERROR
 
 
 def check(cleaned_data, location_str=None):
     if cleaned_data.get('password1') != cleaned_data.get('password2'):
-        return 'passwords are different'
+        return PASSWORDS_ERROR
     phone = cleaned_data.get('phone')
     if not phone.startswith('+7') or len(phone) != NUMBER_LEN:
-        return 'wrong number'
+        return NUMBER_ERROR
     if location_str is not None:
         if len(location_str.split(',')) != 2:
-            return 'Access your geolocation'
+            return GEO_ERROR
         if cleaned_data.get('created') < datetime.date(*CARS_CREATION_YEAR):
-            return 'cars were not created yet'
+            return CAR_CREATION_ERROR
         if datetime.date.today() < cleaned_data.get('created'):
-            return 'Sorry we can`t travel in time'
+            return TIME_ERROR
 
 
 def get_point(points):
@@ -46,7 +39,7 @@ def find_available_drivers(order, higher_rates, distance):
     while True:
         if monotonic() - start >= 10:
             order.delete()
-            return 'No free drivers behind you'
+            return NO_DRIVERS_ERROR
         for radius in range(*distance):
             for rate in higher_rates:
                 drivers = Driver.objects.filter(
