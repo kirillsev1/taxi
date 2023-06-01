@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
-from taxi_manager.models import Driver, Customer, Car, Order, CarOrder
 from rest_framework.serializers import HyperlinkedModelSerializer
+
+from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
 
 ID_STR = 'id'
 USER_STR = 'user'

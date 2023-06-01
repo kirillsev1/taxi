@@ -1,8 +1,9 @@
+from uuid import uuid4
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models import PointField
-from django.db import models
-from uuid import uuid4
 from django.core.exceptions import ValidationError
+from django.db import models
 
 car_choices = (
     ('1', 'economy'),
@@ -39,7 +40,7 @@ class Car(UUIDMixin):
     rate = models.CharField(max_length=8, choices=car_choices)
 
     def __str__(self):
-        return f'Manufacture: {self.manufacturer} - Number: {self.number}'
+        return 'Manufacture: {0} - Number: {1}'.format(self.manufacturer, self.number)
 
     class Meta:
         db_table = 'car'
@@ -57,7 +58,7 @@ class Driver(UUIDMixin):
 
     def __str__(self):
         user = self.user
-        return f'First name: {user.first_name} - Last name: {user.last_name}'
+        return 'First name: {0} - Last name: {1}'.format(user.first_name, user.last_name)
 
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -77,7 +78,7 @@ class Customer(UUIDMixin):
 
     def __str__(self):
         user = self.user
-        return f'First name: {user.first_name} - Last name: {user.last_name}'
+        return 'First name: {0} - Last name: {1}'.format(user.first_name, user.last_name)
 
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -106,7 +107,7 @@ class Order(UUIDMixin):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'Driver: {self.driver} = Customer: {self.customer}'
+        return 'Driver: {0} = Customer: {1}'.format(self.driver, self.customer)
 
     class Meta:
         db_table = 'order'
@@ -117,7 +118,7 @@ class CarOrder(UUIDMixin):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return f'Car: {self.car} | Order: {self.order}'
+        return 'Car: {0} | Order: {1}'.format(self.car, self.order)
 
     class Meta:
         db_table = 'car_order'

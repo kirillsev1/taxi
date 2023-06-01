@@ -1,6 +1,7 @@
-from django.test.runner import DiscoverRunner
-from django.db import connections
 from types import MethodType
+
+from django.db import connections
+from django.test.runner import DiscoverRunner
 
 
 def prepare_db(self):

@@ -1,14 +1,15 @@
-from django.shortcuts import redirect
 from django.db import models
+from django.shortcuts import redirect
 from rest_framework import viewsets
-from taxi_manager.models import Car, Driver, Order, CarOrder
+
+from taxi_manager.models import Car, CarOrder, Driver, Order
 
 PROFILE_URL = '/profile/'
 
 
 def create_viewset(cls_model: models.Model, serializer, permission, order_field='id'):
-    class_name = f'{cls_model.__name__}ViewSet'
-    doc = f'API endpoint that allows users to be viewed or edited for {cls_model.__name__}'
+    class_name = '{0}ViewSet'.format(cls_model.__name__)
+    doc = 'API endpoint that allows users to be viewed or edited for {0}'.format(cls_model.__name__)
     return type(
         class_name,
         (viewsets.ModelViewSet,),

@@ -1,7 +1,9 @@
 import datetime
 from time import monotonic, sleep
-from django.contrib.gis.geos import Point, GEOSGeometry
+
+from django.contrib.gis.geos import GEOSGeometry, Point
 from django.contrib.gis.measure import D
+
 from taxi_manager.models import Driver, Order
 
 SRID = 4326

@@ -1,6 +1,7 @@
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
+
 from taxi_manager import views
 
 router = routers.DefaultRouter()

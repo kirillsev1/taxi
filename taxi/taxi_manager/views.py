@@ -1,14 +1,16 @@
-from django.contrib.auth import decorators as auth_decorators, models
-from django.shortcuts import render, redirect
+from django.contrib.auth import decorators as auth_decorators
+from django.contrib.auth import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import utils
+from django.shortcuts import redirect, render
 from rest_framework import permissions
-from taxi_manager.forms import DriverRegistrationForm, CustomerRegistrationForm, OrderFrom
-from taxi_manager.models import Car, Driver, Customer, Order, CarOrder
-from taxi_manager.serializers import CarSerializer, DriverSerializer, CustomerSerializer, OrderSerializer
-from taxi_manager.serializers import CarOrderSerializer, UserSerializer
-from taxi_manager.view_handles import handle_customer_data, handle_driver_data, handle_eval_form, handle_driver_resp
-from taxi_manager.view_functions import handle_customer_response, get_order, create_viewset
+
+from taxi_manager.forms import CustomerRegistrationForm, DriverRegistrationForm, OrderFrom
+from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
+from taxi_manager.serializers import CarOrderSerializer, CarSerializer, CustomerSerializer, DriverSerializer, \
+    OrderSerializer, UserSerializer
+from taxi_manager.view_functions import create_viewset, get_order, handle_customer_response
+from taxi_manager.view_handlers import handle_customer_data, handle_driver_data, handle_driver_resp, handle_eval_form
 
 car_choices = (
     ('1', 'economy'),

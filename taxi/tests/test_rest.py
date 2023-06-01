@@ -1,9 +1,10 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APIClient
 from rest_framework.authtoken.models import Token
-from taxi_manager.models import Car, Driver, Customer, Order
+from rest_framework.test import APIClient
+
+from taxi_manager.models import Car, Customer, Driver, Order
 
 
 def create_driver(cls_model, user_data, number_of_seats):
@@ -72,8 +73,8 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
         def test_post(self):
             if cls_model.__name__ == 'Order':
                 driver, customer = create_order_data(self.creds_user.get('password'))
-                request_data['customer'] = f'/rest/customer/{customer.id}/'
-                request_data['driver'] = f'/rest/driver/{driver.id}/'
+                request_data['customer'] = '/rest/customer/{0}/'.format(customer.id)
+                request_data['driver'] = '/rest/driver/{0}/'.format(driver.id)
 
             self.client.login(**self.creds_superuser)
             resp_post = self.client.post(url, request_data, format='json')
@@ -99,13 +100,13 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
 
             self.client.login(**self.creds_superuser)
             resp_patch = self.client.patch(
-                f'{url}{cls_id}/',
+                '{0}{1}/'.format(url, cls_id),
                 data_to_change,
                 format='json',
             )
 
             self.assertEqual(resp_patch.status_code, status.HTTP_200_OK)
-            resp_get = self.client.get(f'{url}{cls_id}/')
+            resp_get = self.client.get('{0}{1}/'.format(url, cls_id))
             self.assertEqual(resp_get.status_code, status.HTTP_200_OK)
             self.client.logout()
 
@@ -114,7 +115,7 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
 
             self.client.login(**self.creds_user)
             resp_patch = self.client.patch(
-                f'{url}{cls_id}/',
+                '{0}{1}/'.format(url, cls_id),
                 data_to_change,
                 format='json',
             )
@@ -125,14 +126,14 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
             cls_id = self.get_new_id()
 
             self.client.login(**self.creds_user)
-            resp_delete = self.client.delete(f'{url}{cls_id}/')
+            resp_delete = self.client.delete('{0}{1}/'.format(url, cls_id))
             self.assertEqual(resp_delete.status_code, status.HTTP_403_FORBIDDEN)
             self.client.logout()
 
             self.client.login(**self.creds_superuser)
-            resp_delete = self.client.delete(f'{url}{cls_id}/')
+            resp_delete = self.client.delete('{0}{1}/'.format(url, cls_id))
             self.assertEqual(resp_delete.status_code, status.HTTP_204_NO_CONTENT)
-            resp_delete = self.client.delete(f'{url}{cls_id}/')
+            resp_delete = self.client.delete('{0}{1}/'.format(url, cls_id))
             self.assertEqual(resp_delete.status_code, status.HTTP_404_NOT_FOUND)
             self.client.logout()
 

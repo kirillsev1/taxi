@@ -1,7 +1,8 @@
-from django.test.client import Client
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.test.client import Client
 from rest_framework import status
+
 from taxi_manager.models import Car, Customer, Driver
 
 car = {

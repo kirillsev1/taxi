@@ -1,10 +1,11 @@
+from django.contrib.auth.models import User
 from django.contrib.gis.geos import Point
 from django.db import transaction
-from django.forms import Form, ChoiceField, DecimalField, EmailField, CharField, IntegerField, DateField
-from django.contrib.auth.models import User
-from django.forms.widgets import TextInput, RadioSelect
-from taxi_manager.models import Driver, Car, Customer, Order, CarOrder
-from taxi_manager.form_functions import check, find_available_drivers, is_order_active, get_rates, get_point
+from django.forms import CharField, ChoiceField, DateField, DecimalField, EmailField, Form, IntegerField
+from django.forms.widgets import RadioSelect, TextInput
+
+from taxi_manager.form_functions import check, find_available_drivers, get_point, get_rates, is_order_active
+from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
 
 car_choices = (
     ('1', 'economy'),
