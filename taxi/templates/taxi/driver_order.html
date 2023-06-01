@@ -83,11 +83,8 @@
         <p>{{ order.arrival }}</p>
         <p>{{ order.cost }}</p>
         {% if order.status == "active" %}
-            <select id="answer" name="answer" class="answer">
-                <option>Accept order</option>
-                <option>Cancel</option>
-            </select>
-            <input type="submit" value="Send">
+            <input name="answer" class="answer" type="submit" value="Accept order">
+            <input name="answer" class="answer" type="submit" value="Cancel">
         {% elif order.status == "executed" %}
             <input hidden="hidden" name="answer" class="answer" value="End of trip">
             <input type="submit" value="End of trip">

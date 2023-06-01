@@ -6,7 +6,7 @@ body {
 
 .btn {
   display: inline-block;
-  background-color: #00BFFF;
+  background-color: #00B6F2;
   color: #fff;
   padding: 10px 20px;
   border-radius: 5px;
@@ -15,7 +15,7 @@ body {
 }
 
 .btn:hover {
-  background-color: #008AC6;
+  background-color: #4A97E6;
 }
 
 /* Services section */

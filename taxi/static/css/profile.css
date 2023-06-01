@@ -204,3 +204,17 @@ text-decoration: underline;
 .order form .btn:hover {
   background-color: #0080FF;
 }
+
+.answer {
+  display: inline-block;
+  background-color: #00B6F2;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.2em;
+  margin: 1em auto;
+}
+
+.answer:hover {
+  background-color: #4A97E6;
+}

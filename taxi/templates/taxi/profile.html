@@ -60,21 +60,15 @@
         <form method="post">
           {% csrf_token %}
           {% if order.status == 'active' %}
-            <div class="form-field">
-              <select id="answer" name="answer" class="answer">
-                <option></option>
-                <option>Cancel order</option>
-              </select>
-            </div>
             <input type="hidden" name="order_id" value="{{ order.id }}">
-            <button type="submit">Update</button>
+            <input type="submit" name="answer" class="answer" value="Cancel order">
           {% endif %}
           {% if order.status == 'evaluation' %}
             <div class="form-field">
               {{ data.rate_form }}
             </div>
             <input type="hidden" name="order_id" value="{{ order.id }}">
-            <button type="submit">Update</button>
+            <input type="submit" name="answer" class="answer" value="Rate">
           {% endif %}
         </form>
       {% endif %}
