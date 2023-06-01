@@ -86,8 +86,7 @@
             <input name="answer" class="answer" type="submit" value="Accept order">
             <input name="answer" class="answer" type="submit" value="Cancel">
         {% elif order.status == "executed" %}
-            <input hidden="hidden" name="answer" class="answer" value="End of trip">
-            <input type="submit" value="End of trip">
+            <input name="answer" class="answer" type="submit" value="End of trip">
         {% endif %}
     </form>
     {% else %}

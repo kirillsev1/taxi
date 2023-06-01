@@ -1,8 +1,6 @@
 from unittest.mock import MagicMock
-
 from django.contrib.auth.models import User
 from django.test import TestCase
-
 from taxi_manager.forms import CustomerRegistrationForm, DriverRegistrationForm, OrderFrom
 from taxi_manager.models import Customer
 

@@ -16,6 +16,6 @@
         {% csrf_token %}
         {{ form.as_p }}
         <div id="map"></div>
-        <button type="submit">Submit</button>
+        <input name="answer" class="answer" type="submit" value="Submit">
     </form>
 {% endblock %}
