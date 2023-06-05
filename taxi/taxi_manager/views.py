@@ -4,11 +4,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import utils
 from django.shortcuts import redirect, render
 from rest_framework import permissions
+import requests as rq
 
 from taxi_manager.forms import CustomerRegistrationForm, DriverRegistrationForm, OrderFrom
-from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
+from taxi_manager.models import Car, CarOrder, Customer, Driver, Order, UserAccount
 from taxi_manager.serializers import CarOrderSerializer, CarSerializer, CustomerSerializer, DriverSerializer, \
-    OrderSerializer, UserSerializer
+    OrderSerializer, UserSerializer, UserAccountSerializer
 from taxi_manager.view_functions import create_viewset, get_order, handle_customer_response
 from taxi_manager.view_handlers import handle_customer_data, handle_driver_data, handle_driver_resp, handle_eval_form
 from taxi.config import POST, INDEX_TEMPLATE, DRIVER_ORDER_TEMPLATE, DRIVER_ORDER_URL, PROFILE_TEMPLATE, \
@@ -31,6 +32,34 @@ def profile_page(request):
     customer = Customer.objects.filter(user=user)
 
     if request.method == POST:
+        if 'account_id' in request.POST:
+            account_id = request.POST.get('account_id')
+            response = rq.get(
+                url=f'http://10.82.41.66:8000/rest/account/{account_id}',
+                headers={'Authorization': 'Token 9307fa99f0a58a25445e259a3f0fd391444c61af'}
+            )
+            if response.status_code == 200:
+                instance = UserAccount.objects.create(
+                    user=user,
+                    account=account_id
+                )
+                instance.save()
+                rq.post(
+                    url='http://10.82.41.66:8000/rest/payment/',
+                    headers={'Authorization': 'Token 9307fa99f0a58a25445e259a3f0fd391444c61af'},
+                    json={
+                        'recipient': '25551abe-1b7d-4dbc-9b65-f7630be72748',
+                        'sender': account_id,
+                        'amount': 1,
+                        'callback':
+                            {
+                                'url': f'http://10.82.223.70:8000/rest/user_account/{instance.id}',
+                                'headers': {
+                                    'Authorization': 'Token 38c309708e3e18a578964067cc446e2d41d4dcb6'
+                                }
+                            }
+                    }
+                )
         handle_customer_response(request)
         handle_eval_form(request)
 
@@ -142,3 +171,4 @@ DriverViewSet = create_viewset(Driver, DriverSerializer, Permission)
 PassengerViewSet = create_viewset(Customer, CustomerSerializer, Permission)
 OrderViewSet = create_viewset(Order, OrderSerializer, Permission)
 CarOrderViewSet = create_viewset(CarOrder, CarOrderSerializer, Permission)
+UserAccountViewSet = create_viewset(UserAccount, UserAccountSerializer, Permission)

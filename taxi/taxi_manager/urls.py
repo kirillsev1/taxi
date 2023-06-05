@@ -9,6 +9,7 @@ router.register('car', views.CarViewSet)
 router.register('driver', views.DriverViewSet)
 router.register('customer', views.PassengerViewSet)
 router.register('order', views.OrderViewSet)
+router.register('user_account', views.UserAccountViewSet)
 
 urlpatterns = [
     path('', views.index, name='homepage'),

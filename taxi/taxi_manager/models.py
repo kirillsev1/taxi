@@ -28,7 +28,18 @@ class Car(UUIDMixin):
 
     class Meta:
         db_table = 'car'
+statuses = (
+    ('Cancelled', 'Cancelled'),
+    ('Confirmed', 'Confirmed'),
+    ('Waiting', 'Waiting')
+)
+class UserAccount(UUIDMixin):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    account = models.UUIDField(blank=True, null=False)
+    status = models.CharField(choices=statuses, default='Waiting', null=False, max_length=16)
 
+    class Meta:
+        db_table = 'user_account'
 
 class Driver(UUIDMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -62,7 +73,7 @@ class Customer(UUIDMixin):
 
     def __str__(self):
         user = self.user
-        return 'First name: {0} - Last name: {1}'.format(user.first_name, user.last_name)
+        return '{0} {1}'.format(user.first_name, user.last_name)
 
     def delete(self, *args, **kwargs):
         self.user.delete()
