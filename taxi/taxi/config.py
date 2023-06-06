@@ -1,3 +1,4 @@
+"""Configuration file."""
 car_choices = (
     ('1', 'economy'),
     ('2', 'comfort'),

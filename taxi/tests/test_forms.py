@@ -1,3 +1,4 @@
+"""Test module for the taxi_manager forms."""
 from unittest.mock import MagicMock
 
 from django.contrib.auth.models import User
@@ -9,6 +10,8 @@ from taxi.config import NUMBER_ERROR, NO_DRIVERS_ERROR
 
 
 class TestForms(TestCase):
+    """Test case class for testing forms in the taxi manager application."""
+
     driver_data = {
         'username': 'testuser',
         'first_name': 'Test1',
@@ -26,11 +29,13 @@ class TestForms(TestCase):
     }
 
     def test_driver_registration_form_valid_data(self):
+        """Test the driver registration form with valid data."""
         form = DriverRegistrationForm(data=self.driver_data)
 
         self.assertTrue(form.is_valid())
 
     def test_customer_registration_form_valid_data(self):
+        """Test the customer registration form with valid data."""
         form = CustomerRegistrationForm(data={
             'username': 'testuser',
             'first_name': 'Test2',
@@ -44,6 +49,7 @@ class TestForms(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_order_form_valid_data(self):
+        """Test the order form with valid data."""
         form = OrderFrom(data={
             'departure': '55.7558,37.6173',
             'arrival': '55.7592,37.6195',
@@ -58,6 +64,7 @@ class TestForms(TestCase):
         self.assertEqual(form.save(request), NO_DRIVERS_ERROR)
 
     def test_driver_registration_form_wrong_phone(self):
+        """Test the driver registration form with an invalid phone number."""
         form = DriverRegistrationForm(data=self.driver_data)
         self.assertTrue(form.is_valid())
         self.assertEqual(form.save('1.1,1.1'), NUMBER_ERROR)

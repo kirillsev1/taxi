@@ -1,3 +1,4 @@
+"""Main views."""
 from django.contrib.auth import decorators as auth_decorators
 from django.contrib.auth import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,7 +17,19 @@ from taxi.config import POST, INDEX_TEMPLATE, DRIVER_ORDER_TEMPLATE, DRIVER_ORDE
 
 
 class Permission(permissions.BasePermission):
-    def has_permission(self, request, _):
+    """Custom permission class that defines the permission rules for API requests."""
+
+    def has_permission(self, request, view):
+        """
+        Check if the user has permission to access the view.
+
+        Args:
+            request (HttpRequest): The HTTP request object.
+            view (Any): The view being accessed.
+
+        Returns:
+            bool: True if the user has permission, False otherwise.
+        """
         if request.method in {'GET', 'HEAD', 'OPTIONS', 'PATCH'}:
             return bool(request.user and request.user.is_authenticated)
         elif request.method in {'POST', 'PUT', 'DELETE'}:
@@ -26,6 +39,15 @@ class Permission(permissions.BasePermission):
 
 @auth_decorators.login_required
 def profile_page(request):
+    """
+    View function for the user profile page. Handles rendering the profile template and processing user data.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered response for the profile page.
+    """
     user = request.user
     driver = Driver.objects.filter(user=user)
     customer = Customer.objects.filter(user=user)
@@ -46,11 +68,31 @@ def profile_page(request):
 
 
 def index(request):
+    """
+    View function for the index page. Renders the index template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered response for the index page.
+    """
     return render(request, INDEX_TEMPLATE)
 
 
 @auth_decorators.login_required
 def driver_order_page(request):
+    """
+    View function for the driver order page.
+
+    Handles rendering the driver order template and processing driver responses.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered response for the driver order page.
+    """
     try:
         Driver.objects.get(user=request.user)
     except ObjectDoesNotExist:
@@ -66,6 +108,17 @@ def driver_order_page(request):
 
 @auth_decorators.login_required
 def order_page(request):
+    """
+    View function for the order page.
+
+    Handles rendering the order template and processing order form submissions.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered response for the order page.
+    """
     try:
         Customer.objects.get(user=request.user)
     except ObjectDoesNotExist:
@@ -86,6 +139,17 @@ def order_page(request):
 
 
 def driver_register(request):
+    """
+    View function for the driver registration page.
+
+    Handles rendering the driver registration template and processing driver registration form submissions.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered response for the registration page.
+    """
     if request.user.is_authenticated:
         return redirect('/')
     if request.method == POST:
@@ -114,6 +178,17 @@ def driver_register(request):
 
 
 def customer_register(request):
+    """
+    View function for the customer registration page.
+
+    Handles rendering the customer registration template and processing customer registration form submissions.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered response for the registration page.
+    """
     if request.user.is_authenticated:
         return redirect('/')
     if request.method == POST:

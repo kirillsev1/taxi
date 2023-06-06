@@ -1,6 +1,6 @@
+"""Forms for views."""
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import Point
-from django.db import transaction
 from django.forms import CharField, ChoiceField, DateField, DecimalField, EmailField, Form, IntegerField
 from django.forms.widgets import RadioSelect, TextInput
 
@@ -10,6 +10,8 @@ from taxi.config import MAX_STR_LEN, car_choices
 
 
 class DriverRegistrationForm(Form):
+    """Form for driver registration."""
+
     username = CharField(max_length=100)
     first_name = CharField(max_length=MAX_STR_LEN)
     last_name = CharField(max_length=MAX_STR_LEN)
@@ -26,6 +28,15 @@ class DriverRegistrationForm(Form):
     rate = ChoiceField(choices=car_choices, widget=RadioSelect(attrs={'class': 'rate-input'}))
 
     def save(self, location_str):
+        """
+        Save the driver registration form and create a new driver instance.
+
+        Args:
+            location_str: The location as a string.
+
+        Returns:
+            Driver: The created driver instance.
+        """
         error = check(self.cleaned_data, location_str)
         if error:
             return error
@@ -69,6 +80,8 @@ class DriverRegistrationForm(Form):
 
 
 class CustomerRegistrationForm(Form):
+    """Form for customer registration."""
+
     username = CharField(max_length=100)
     first_name = CharField(max_length=MAX_STR_LEN)
     last_name = CharField(max_length=MAX_STR_LEN)
@@ -78,6 +91,12 @@ class CustomerRegistrationForm(Form):
     password2 = CharField(max_length=100)
 
     def save(self):
+        """
+        Save the customer registration form and create a new customer instance.
+
+        Returns:
+            str or None: Error message or None if successful.
+        """
         cleaned_data = self.cleaned_data
 
         username = cleaned_data.get('username')
@@ -103,16 +122,29 @@ class CustomerRegistrationForm(Form):
 
 
 class LoginForm(Form):
+    """Form for user login."""
+
     username = CharField()
     password = CharField()
 
 
 class OrderFrom(Form):
+    """Form for creating an order."""
+
     departure = CharField(widget=TextInput(attrs={'id': 'departure-input'}))
     arrival = CharField(widget=TextInput(attrs={'id': 'arrival-input'}))
     rate = ChoiceField(widget=RadioSelect(), choices=car_choices)
 
     def save(self, request):
+        """
+        Save the order form and create a new order instance.
+
+        Args:
+            request: The HTTP request.
+
+        Returns:
+            str or None: Error message or None if successful.
+        """
         order = Order.objects.create(
             customer=Customer.objects.get(user=request.user),
             departure=get_point(self.cleaned_data.get('departure')),
@@ -138,23 +170,40 @@ class OrderFrom(Form):
 
 
 class CostForm(Form):
+    """Form for entering the order cost."""
+
     cost = DecimalField()
 
-    @transaction.atomic
     def save(self, order_id):
+        """
+        Update the order cost based on the cost form.
+
+        Args:
+            order_id: The ID of the order.
+        """
         order_cost = self.cleaned_data.get('cost')
         if order_cost > 0:
             Order.objects.filter(id=order_id).update(cost=order_cost)
 
 
 class EvaluationForm(Form):
+    """Form for evaluating an order."""
+
     rating = DecimalField()
 
-    @transaction.atomic
     def save(self, order_id):
+        """
+        Update the order rating based on the evaluation form.
+
+        Args:
+            order_id: The ID of the order.
+
+        Returns:
+            str or None: Error message or None if successful.
+        """
         order = Order.objects.filter(id=order_id)
         order_rate = self.cleaned_data.get('rating')
         if 0 <= order_rate <= 5 and order[0].status == 'evaluation':
             order.update(rating=order_rate, status='completed')
         else:
-            return 'only numbers form 0 to 5'
+            return 'Please enter a number between 0 and 5 for the rating.'
