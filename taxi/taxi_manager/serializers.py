@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.serializers import HyperlinkedModelSerializer
 
-from taxi_manager.models import Car, CarOrder, Customer, Driver, Order, UserAccount
+from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
 from taxi.config import ID_STR, USER_STR
 
 
@@ -11,10 +11,6 @@ class UserSerializer(HyperlinkedModelSerializer):
         lookup_field = ID_STR
         fields = (ID_STR, 'username', 'password', 'first_name', 'last_name', 'email')
 
-class UserAccountSerializer(HyperlinkedModelSerializer):
-    class Meta:
-        model = UserAccount
-        fields = ['user', 'account', 'status']
 
 class CarSerializer(HyperlinkedModelSerializer):
     class Meta:

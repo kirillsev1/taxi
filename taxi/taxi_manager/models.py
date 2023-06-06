@@ -28,18 +28,7 @@ class Car(UUIDMixin):
 
     class Meta:
         db_table = 'car'
-statuses = (
-    ('Cancelled', 'Cancelled'),
-    ('Confirmed', 'Confirmed'),
-    ('Waiting', 'Waiting')
-)
-class UserAccount(UUIDMixin):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    account = models.UUIDField(blank=True, null=False)
-    status = models.CharField(choices=statuses, default='Waiting', null=False, max_length=16)
 
-    class Meta:
-        db_table = 'user_account'
 
 class Driver(UUIDMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

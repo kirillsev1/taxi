@@ -1,10 +1,10 @@
 from django.db.utils import IntegrityError
 from django.shortcuts import redirect
+
+from taxi.config import DRIVER_ORDER_URL, PROFILE_URL, car_choices
 from taxi_manager.forms import EvaluationForm
 from taxi_manager.models import CarOrder, Order
 from taxi_manager.view_functions import get_objects, save_ended_order, save_order
-
-from taxi.config import DRIVER_ORDER_URL, PROFILE_URL, car_choices
 
 
 def handle_eval_form(request):

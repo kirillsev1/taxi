@@ -22,13 +22,12 @@ function initMap() {
             });
 
             map.addListener('rightclick', function(e) {
-                document.getElementById('departure-input').value = e.latLng.lng() + ',' + e.latLng.lat();
+                document.getElementById('departure-input').value = e.latLng.lat() + ',' + e.latLng.lng();
                 marker1.setPosition(e.latLng);
-
             });
 
             map.addListener('click', function(e) {
-                document.getElementById('arrival-input').value = e.latLng.lng() + ',' + e.latLng.lat();
+                document.getElementById('arrival-input').value = e.latLng.lat() + ',' + e.latLng.lng();
                 if (!marker2) {
                     marker2 = new google.maps.Marker({
                         position: e.latLng,
@@ -41,10 +40,10 @@ function initMap() {
                 // Set the form fields to the new coordinates
                 var coordinates1Field = document.getElementById('departure-input');
                 var coordinates2Field = document.getElementById('arrival-input');
-                coordinates1Field.value = marker1.getPosition().lng() + ',' + marker1.getPosition().lat();
-                coordinates2Field.value = marker2.getPosition().lng() + ',' + marker2.getPosition().lat();
-
+                coordinates1Field.value = marker1.getPosition().lat() + ',' + marker1.getPosition().lng();
+                coordinates2Field.value = marker2.getPosition().lat() + ',' + marker2.getPosition().lng();
             });
+
             const trafficLayer = new google.maps.TrafficLayer();
             trafficLayer.setMap(map);
         }, function() {
