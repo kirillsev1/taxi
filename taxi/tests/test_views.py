@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
 from rest_framework import status
-
 from taxi_manager.models import Car, Customer, Driver
-from taxi.config import PROFILE_URL, CUSTOMER_ORDER_URL, DRIVER_ORDER_URL
+
+from taxi.config import CUSTOMER_ORDER_URL, DRIVER_ORDER_URL, PROFILE_URL
 
 car = {
     'manufacturer': '123',

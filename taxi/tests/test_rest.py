@@ -4,9 +4,14 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
-
 from taxi_manager.models import Car, Customer, Driver, Order
-from taxi.config import CAR_REST_URL, CUSTOMER_REST_URL, DRIVER_REST_URL, ORDER_REST_URL
+
+from taxi.config import (
+    CAR_REST_URL,
+    CUSTOMER_REST_URL,
+    DRIVER_REST_URL,
+    ORDER_REST_URL,
+)
 
 
 def create_driver(cls_model, user_data, number_of_seats):
@@ -120,6 +125,7 @@ def create_view_set_tests(url, cls_model, request_data, data_to_change):
     Returns:
         class: The custom test case class.
     """
+
     class CustomTestCase(TestCase):
         """Custom test case class for testing REST API viewsets."""
 
@@ -268,7 +274,6 @@ customer_data = {
     },
     'phone': '1200000000',
 }
-
 
 DriverViewSetTests = create_view_set_tests(DRIVER_REST_URL, Driver, driver_data, phone_to_change)
 CustomerViewSetTests = create_view_set_tests(CUSTOMER_REST_URL, Customer, customer_data, phone_to_change)

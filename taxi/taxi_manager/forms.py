@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.gis.geos import Point
 from django.forms import CharField, ChoiceField, DateField, DecimalField, EmailField, Form, IntegerField
 from django.forms.widgets import RadioSelect, TextInput
-
 from taxi_manager.form_functions import check, find_available_drivers, get_point, get_rates, is_order_active
 from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
+
 from taxi.config import MAX_STR_LEN, car_choices
 
 

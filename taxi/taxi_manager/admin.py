@@ -1,6 +1,5 @@
 """Admin views."""
 from django.contrib import admin
-
 from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
 
 

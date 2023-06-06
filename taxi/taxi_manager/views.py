@@ -5,15 +5,46 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import utils
 from django.shortcuts import redirect, render
 from rest_framework import permissions
-
-from taxi_manager.forms import CustomerRegistrationForm, DriverRegistrationForm, OrderFrom
+from taxi_manager.forms import (
+    CustomerRegistrationForm,
+    DriverRegistrationForm,
+    OrderFrom,
+)
 from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
-from taxi_manager.serializers import CarOrderSerializer, CarSerializer, CustomerSerializer, DriverSerializer, \
-    OrderSerializer, UserSerializer
-from taxi_manager.view_functions import create_viewset, get_order, handle_customer_response
-from taxi_manager.view_handlers import handle_customer_data, handle_driver_data, handle_driver_resp, handle_eval_form
-from taxi.config import POST, INDEX_TEMPLATE, DRIVER_ORDER_TEMPLATE, DRIVER_ORDER_URL, PROFILE_TEMPLATE, \
-    PROFILE_URL, LOGIN_URL, CUSTOMER_ORDER_URL, ORDER_PAGE_TEMPLATE, REG_TEMPLATE, ERROR, FORM, USER_ERROR
+from taxi_manager.serializers import (
+    CarOrderSerializer,
+    CarSerializer,
+    CustomerSerializer,
+    DriverSerializer,
+    OrderSerializer,
+    UserSerializer,
+)
+from taxi_manager.view_functions import (
+    create_viewset,
+    get_order,
+    handle_customer_response,
+)
+from taxi_manager.view_handlers import (
+    handle_customer_data,
+    handle_driver_data,
+    handle_driver_resp,
+    handle_eval_form,
+)
+from taxi.config import (
+    CUSTOMER_ORDER_URL,
+    DRIVER_ORDER_TEMPLATE,
+    DRIVER_ORDER_URL,
+    ERROR,
+    FORM,
+    INDEX_TEMPLATE,
+    LOGIN_URL,
+    ORDER_PAGE_TEMPLATE,
+    POST,
+    PROFILE_TEMPLATE,
+    PROFILE_URL,
+    REG_TEMPLATE,
+    USER_ERROR,
+)
 
 
 class Permission(permissions.BasePermission):
