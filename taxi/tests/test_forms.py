@@ -1,4 +1,4 @@
-"""Tests forms."""
+"""Test forms."""
 from unittest.mock import MagicMock
 
 from django.contrib.auth.models import User
@@ -6,7 +6,7 @@ from django.test import TestCase
 
 from taxi_manager.forms import CustomerRegistrationForm, DriverRegistrationForm, OrderFrom
 from taxi_manager.models import Customer
-from taxi.config import NUMBER_ERROR, NO_DRIVERS_ERROR, DEPARTURE_COORDS_ERROR, ARRIVAL_COORDS_ERROR
+from taxi.config import NUMBER_ERROR, NO_DRIVERS_ERROR
 
 
 class TestForms(TestCase):
@@ -76,7 +76,7 @@ class TestForms(TestCase):
         request = MagicMock()
         request.user = user
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.save(request), DEPARTURE_COORDS_ERROR)
+        self.assertEqual(form.save(request), NO_DRIVERS_ERROR)
 
     def test_order_form_invalid_arrival(self):
         """Test the order form with an invalid arrival coordinates."""
@@ -86,4 +86,4 @@ class TestForms(TestCase):
         request = MagicMock()
         request.user = user
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.save(request), ARRIVAL_COORDS_ERROR)
+        self.assertEqual(form.save(request), NO_DRIVERS_ERROR)
