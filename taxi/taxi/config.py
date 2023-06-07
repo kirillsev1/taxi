@@ -26,6 +26,8 @@ CAR_CREATION_ERROR = 'cars were not created yet'
 TIME_ERROR = 'Sorry we can`t travel in time'
 NO_DRIVERS_ERROR = 'No free drivers behind you'
 USER_ERROR = 'User with such username already exists'
+DEPARTURE_COORDS_ERROR = 'Wrong departure coordinates'
+ARRIVAL_COORDS_ERROR = 'Wrong arrival coordinates'
 
 ERROR = 'error'
 FORM = 'form'

@@ -6,7 +6,7 @@ from django.forms.widgets import RadioSelect, TextInput
 from taxi_manager.form_functions import check, find_available_drivers, get_point, get_rates, is_order_active
 from taxi_manager.models import Car, CarOrder, Customer, Driver, Order
 
-from taxi.config import MAX_STR_LEN, car_choices
+from taxi.config import MAX_STR_LEN, car_choices, DEPARTURE_COORDS_ERROR, ARRIVAL_COORDS_ERROR
 
 
 class DriverRegistrationForm(Form):
@@ -145,10 +145,19 @@ class OrderFrom(Form):
         Returns:
             str or None: Error message or None if successful.
         """
+        try:
+            departure_coords = get_point(self.cleaned_data.get('departure'))
+        except ValueError:
+            return DEPARTURE_COORDS_ERROR
+        try:
+            arrival_coords = get_point(self.cleaned_data.get('arrival'))
+        except ValueError:
+            return ARRIVAL_COORDS_ERROR
+
         order = Order.objects.create(
             customer=Customer.objects.get(user=request.user),
-            departure=get_point(self.cleaned_data.get('departure')),
-            arrival=get_point(self.cleaned_data.get('arrival')),
+            departure=departure_coords,
+            arrival=arrival_coords,
             rate=self.cleaned_data.get('rate'),
             rating=5,
             status='active',

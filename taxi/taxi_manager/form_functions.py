@@ -7,7 +7,7 @@ from django.contrib.gis.measure import D
 
 from taxi_manager.models import Driver, Order
 from taxi.config import SRID, NUMBER_LEN, CARS_CREATION_YEAR, car_choices, PASSWORDS_ERROR, NUMBER_ERROR
-from taxi.config import GEO_ERROR, CAR_CREATION_ERROR, TIME_ERROR, NO_DRIVERS_ERROR
+from taxi.config import CAR_CREATION_ERROR, TIME_ERROR, NO_DRIVERS_ERROR
 
 
 def check(cleaned_data, location_str=None):
@@ -31,8 +31,6 @@ def check(cleaned_data, location_str=None):
             return CAR_CREATION_ERROR
         if datetime.date.today() < cleaned_data.get('created'):
             return TIME_ERROR
-    elif len(location_str.split(',')) != 2:
-        return GEO_ERROR
 
 
 def get_point(points):
