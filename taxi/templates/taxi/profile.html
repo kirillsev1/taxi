@@ -20,12 +20,6 @@
         <p>customer phone: {{ data.customer_phone }}</p>
       {% endif %}
     {% endif %}
-    <p>Link a bank account</p>
-    <form action="" method="POST">
-      {% csrf_token %}
-    <input name="account_id" placeholder="Enter account id" type="text">
-      <button type="submit">Submit</button>
-    </form>
   </div>
 
   {% if data.driver_phone %}
