@@ -72,7 +72,6 @@
 {% endblock %}
 
 {% block content %}
-{{ order.departure }}
     {% if order.status == "active" or order.status == "executed" %}
     <form action="{{ request.path }}?order_id={{ order.id }}" method="POST">
         {% csrf_token %}
