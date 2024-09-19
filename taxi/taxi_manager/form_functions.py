@@ -43,7 +43,7 @@ def get_point(points):
     Returns:
         Point: The Point object representing the coordinates.
     """
-    x_pos, y_pos = points.split(',')
+    y_pos, x_pos = points.split(',')
     return Point(float(x_pos), float(y_pos), srid=SRID)
 
 
